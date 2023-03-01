@@ -1,0 +1,108 @@
+[{
+    "name": "blame",
+    "description": "Blame a user a certain number of times.",
+    "options": [{
+            "name": "user",
+            "type": 6,
+            "description": "The user to blame.",
+            "required": true
+        }, {
+            "name": "count",
+            "type": 4,
+            "description": "The number of times to blame the user.",
+            "required": true
+        }
+    ]
+}, {
+    "name": "top",
+    "description": "Get the top users who have blamed Serena the most."
+}, {
+    "name": "updateraidtime",
+    "description": "Update the next raid time for a specific channel.",
+    "options": [{
+            "name": "month",
+            "type": 3,
+            "description": "The month of the next raid.",
+            "required": true,
+            "choices": [{
+                    "name": "January",
+                    "value": "January"
+                }, {
+                    "name": "February",
+                    "value": "February"
+                }, {
+                    "name": "March",
+                    "value": "March"
+                }, {
+                    "name": "April",
+                    "value": "April"
+                }, {
+                    "name": "May",
+                    "value": "May"
+                }, {
+                    "name": "June",
+                    "value": "June"
+                }, {
+                    "name": "July",
+                    "value": "July"
+                }, {
+                    "name": "August",
+                    "value": "August"
+                }, {
+                    "name": "September",
+                    "value": "September"
+                }, {
+                    "name": "October",
+                    "value": "October"
+                }, {
+                    "name": "November",
+                    "value": "November"
+                }, {
+                    "name": "December",
+                    "value": "December"
+                }
+            ]
+        }, {
+            "name": "day",
+            "type": 4,
+            "description": "The day of the next raid (1-31).",
+            "required": true
+        }, {
+            "name": "time",
+            "type": 3,
+            "description": "The time of the next raid in HH:MM format.",
+            "required": true
+        }, {
+            "name": "next_raid",
+            "type": 3,
+            "description": "The name of the next raid.",
+            "required": true
+        }, {
+            "name": "channel_name",
+            "type": 7,
+            "description": "The name of the channel to update.",
+            "required": true
+        }
+    ]
+}, {
+    "name": "setname",
+    "description": "Set the bot's name for this server.",
+    "options": [{
+            "name": "name",
+            "type": 3,
+            "description": "The name to set for the bot.",
+            "required": true
+        }
+    ]
+}, {
+    "name": "setavatar",
+    "description": "Set the bot's avatar for this server.",
+    "options": [{
+            "name": "url",
+            "type": 3,
+            "description": "The URL of the image to set as the bot's avatar.",
+            "required": true
+        }
+    ]
+}
+]
