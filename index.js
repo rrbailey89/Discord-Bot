@@ -61,6 +61,10 @@ client.on('interactionCreate', async(interaction) => {
     const args = interaction.options;
 
     if (command === 'blame') {
+        // Get the server ID from the interaction object
+        const serverId = interaction.guild.id;
+
+        // Get the member and count from the interaction options
         const member = interaction.options.getMember('user');
         const count = interaction.options.getInteger('count');
 
@@ -92,11 +96,18 @@ client.on('interactionCreate', async(interaction) => {
             name,
             blameCount: 0,
             blames: {},
-            cooldown: 0
+            cooldown: 0,
+            servers: {}
         };
-        userObj.blameCount += count;
-        userObj.blames[serenaId] = userObj.blames[serenaId] || 0;
-        userObj.blames[serenaId] += count;
+
+        // Store the server ID along with the user data
+        userObj.servers[serverId] = userObj.servers[serverId] || {
+            blameCount: 0,
+            blames: {}
+        };
+        userObj.servers[serverId].blameCount += count;
+        userObj.servers[serverId].blames[serenaId] = userObj.servers[serverId].blames[serenaId] || 0;
+        userObj.servers[serverId].blames[serenaId] += count;
         data[id] = userObj;
 
         // Update cooldown data in both the data object and the blameCooldowns map
@@ -109,27 +120,34 @@ client.on('interactionCreate', async(interaction) => {
         await saveData();
         blameCounts.set(id, userObj.blameCount);
 
-        await interaction.reply(`${name} has been blamed ${userObj.blameCount} times.`);
+        await interaction.reply(`${name} has been blamed ${userObj.servers[serverId].blameCount} times.`);
 
     } else if (command === 'top') {
-        const count = 5;
+  const count = 5;
+  const serverId = interaction.guild.id;
 
-        const users = Object.values(data)
-            .filter(user => user.blames[serenaId] !== undefined && user.blames[serenaId] > 0)
-            .sort((a, b) => b.blames[serenaId] - a.blames[serenaId])
-            .slice(0, count);
+  const users = Object.values(data)
+    .filter(user => user.blames[serenaId] !== undefined && user.blames[serenaId] > 0 && user.servers[serverId]);
+    
+  console.log('Filtered users:', users);
 
-        const response = users.map((user, index) => `${index + 1}. ${user.name} - ${user.blames[serenaId]}`).join('\n');
+  const sortedUsers = users.sort((a, b) => b.blames[serenaId] - a.blames[serenaId]);
+  console.log("sortedUsers:", sortedUsers);
 
-        const embed = {
-            color: 0xff0000,
-            title: `Top ${count} people who have blamed Serena the most:`,
-            description: response,
-        };
+  const topUsers = sortedUsers.slice(0, count);
 
-        await interaction.reply({
-            embeds: [embed]
-        });
+  const response = topUsers.map((user, index) => `${index + 1}. ${user.name} - ${user.blames[serenaId]}`).join('\n');
+  console.log("topUsers:", topUsers);
+  
+  const embed = {
+    color: 0xff0000,
+    title: `Top ${count} people who have blamed Serena the most:`,
+    description: response,
+  };
+
+  await interaction.reply({
+    embeds: [embed]
+  });
 
     } else if (command === 'setname') {
         // Check that the user is the guild owner
@@ -186,7 +204,17 @@ client.on('interactionCreate', async(interaction) => {
                 ephemeral: true
             });
         }
-
+    } else if (command === 'populate') {
+        const serverId = interaction.guild.id;
+        Object.values(data).forEach(userObj => {
+            userObj.servers = userObj.servers || {};
+            userObj.servers[serverId] = userObj.servers[serverId] || {
+                blameCount: 0,
+                blames: {}
+            };
+        });
+        await saveData();
+        await interaction.reply('Server IDs populated successfully!');
     } else if (command === 'updateraidtime') {
         const month = args.getString('month', true);
         const day = args.getInteger('day', true);
