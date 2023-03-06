@@ -1,6 +1,5 @@
 const { Client } = require("discord.js");
-const moment = require('moment-timezone');
-const client = new Client({ intents: 3276799,});
+const client = new Client({ intents: 3276799 });
 const config = require("./config.json");
 
 client.on("ready", () => {
@@ -50,34 +49,40 @@ client.on("interactionCreate", async (interaction) => {
         interaction.deleteReply();
       }, 5000);
     }
-} else if (interaction.commandName === 'updateraidtime') {
-  const month = interaction.options.getString('month');
-  const day = interaction.options.getString('day');
-  const year = interaction.options.getString('year');
-  const time = interaction.options.getString('time');
-  const timezone = interaction.options.getString('timezone');
-  const raid = interaction.options.getString('raid');
-  const channel = interaction.options.getChannel('channel');
+  } else if (interaction.commandName === "updateraidtime") {
+    const month = interaction.options.getString("month");
+    const day = interaction.options.getString("day");
+    const year = interaction.options.getString("year");
+    const time = interaction.options.getString("time");
+    const timezone = interaction.options.getString("timezone");
+    const raid = interaction.options.getString("raid");
+    const is_mine = interaction.options.getBoolean("is_mine");
+    const channel = interaction.options.getChannel("channel");
 
-  console.log(`month: ${month}`);
-  console.log(`day: ${day}`);
-  console.log(`year: ${year}`);
-  console.log(`time: ${time}`);
-  console.log(`timezone: ${timezone}`);
-  console.log(`raidName: ${raid}`);
-  console.log(`channel: ${channel}`);
+    console.log(`month: ${month}`);
+    console.log(`day: ${day}`);
+    console.log(`year: ${year}`);
+    console.log(`time: ${time}`);
+    console.log(`timezone: ${timezone}`);
+    console.log(`raidName: ${raid}`);
+    console.log(`channel: ${channel}`);
+    console.log(`is_mine: ${is_mine}`);
 
-  // Calculate Unix timestamp from inputs
-  const formattedTime = `${time}:00 ${timezone}`;
-  const dateString = `${day} ${month} ${year} ${formattedTime}`;
-  const timestamp = Math.floor(Date.parse(dateString) / 1000);
+    // Calculate Unix timestamp from inputs
+    const formattedTime = `${time}:00 ${timezone}`;
+    const dateString = `${day} ${month} ${year} ${formattedTime}`;
+    const timestamp = Math.floor(Date.parse(dateString) / 1000);
 
-  console.log(`timestamp: ${timestamp}`);
+    console.log(`timestamp: ${timestamp}`);
 
-  // Update channel topic
-  await channel.setTopic(`Upcoming raid: ${raid} | Time: <t:${timestamp}:F>`);
-  await interaction.reply(`Raid time updated for channel ${channel.name}!`);
+    // Append "M.I.N.E." to raid name if isMine is true
+    const formattedRaid = is_mine ? `${raid} M.I.N.E.` : raid;
 
+    // Update channel topic
+    await channel.setTopic(
+      `Next Meet Is: ${formattedRaid} | Time: <t:${timestamp}:f>`
+    );
+    await interaction.reply(`Raid time updated for channel ${channel.name}!`);
   } else if (interaction.commandName === "setavatar") {
     console.log(`Interaction received: setavatar command`);
     const urlOption = interaction.options.get("url");
@@ -94,7 +99,7 @@ client.on("interactionCreate", async (interaction) => {
       reply.delete();
     }, 5000);
   } else {
-    console.log( 
+    console.log(
       `Interaction received: unknown command ${interaction.commandName}`
     );
   }
