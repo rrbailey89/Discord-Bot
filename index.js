@@ -1,244 +1,104 @@
-const {
-    Client,
-    Intents
-} = require('discord.js');
-const fs = require('fs').promises;
+const { Client } = require("discord.js");
 const moment = require('moment-timezone');
-const config = require('./config.json');
+const client = new Client({ intents: 3276799,});
+const config = require("./config.json");
 
-const client = new Client({
-    intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS],
+client.on("ready", () => {
+  console.log(`Logged in as ${client.user.tag}`);
 });
 
-client.once('ready', async() => {
-    console.log('Ready!');
-    await loadData();
+// Listen for rate limit events
+client.rest.on("rateLimited", (rateLimitedInfo) => {
+  console.log(`Rate limited: ${JSON.stringify(rateLimitedInfo)}`);
 });
 
-const serenaId = '803867382447079485';
-const blameCounts = new Map();
-const blameCooldowns = new Map();
-let data = {};
+client.on("interactionCreate", async (interaction) => {
+  if (!interaction.isCommand()) {
+    console.log(`Interaction received: not a command`);
+    return;
+  }
 
-async function loadData() {
-    try {
-        const rawData = await fs.readFile('./data/data.json');
-        data = JSON.parse(rawData);
-        console.log('Loaded data:', data);
+  if (interaction.commandName === "grantrole") {
+    console.log(`Interaction received: grantrole command`);
+    const roleOption = interaction.options.get("role");
+    const userOption = interaction.options.get("user");
+    const roleID = roleOption.value;
+    const userID = userOption.value;
 
-        // Load cooldown data from the data file
-        Object.keys(data).forEach(id => {
-            blameCooldowns.set(id, data[id].cooldown || 0);
-        });
-    } catch (err) {
-        console.error(err);
+    const guild = interaction.guild;
+    const member = await guild.members.fetch(userID);
+    const role = guild.roles.cache.get(roleID);
+
+    if (member.roles.cache.has(roleID)) {
+      // If the member already has the role, remove it
+      await member.roles.remove(role);
+      console.log(`Removed ${role.name} role from <@${userID}>`);
+      const reply = await interaction.reply(
+        `Removed ${role.name} role from <@${userID}>`
+      );
+      setTimeout(() => {
+        interaction.deleteReply();
+      }, 5000);
+    } else {
+      // If the member does not have the role, grant it
+      await member.roles.add(role);
+      console.log(`Added ${role.name} role to <@${userID}>`);
+      const reply = await interaction.reply(
+        `Added ${role.name} role to <@${userID}>`
+      );
+      setTimeout(() => {
+        interaction.deleteReply();
+      }, 5000);
     }
-}
+} else if (interaction.commandName === 'updateraidtime') {
+  const month = interaction.options.getString('month');
+  const day = interaction.options.getString('day');
+  const year = interaction.options.getString('year');
+  const time = interaction.options.getString('time');
+  const timezone = interaction.options.getString('timezone');
+  const raid = interaction.options.getString('raid');
+  const channel = interaction.options.getChannel('channel');
 
-async function saveData() {
-    try {
-        // Add cooldown data to the data object
-        blameCooldowns.forEach((cooldown, id) => {
-            data[id].cooldown = cooldown;
-        });
+  console.log(`month: ${month}`);
+  console.log(`day: ${day}`);
+  console.log(`year: ${year}`);
+  console.log(`time: ${time}`);
+  console.log(`timezone: ${timezone}`);
+  console.log(`raidName: ${raid}`);
+  console.log(`channel: ${channel}`);
 
-        await fs.writeFile('./data/data.json', JSON.stringify(data));
-        console.log('Saved data:', data);
-    } catch (err) {
-        console.error(err);
-    }
-}
+  // Calculate Unix timestamp from inputs
+  const formattedTime = `${time}:00 ${timezone}`;
+  const dateString = `${day} ${month} ${year} ${formattedTime}`;
+  const timestamp = Math.floor(Date.parse(dateString) / 1000);
 
-client.on('rateLimit', (rateLimitInfo) => {
-    console.log(`Rate limited: ${JSON.stringify(rateLimitInfo)}`);
-});
+  console.log(`timestamp: ${timestamp}`);
 
-client.on('interactionCreate', async(interaction) => {
-    if (!interaction.isCommand())
-        return;
+  // Update channel topic
+  await channel.setTopic(`Upcoming raid: ${raid} | Time: <t:${timestamp}:F>`);
+  await interaction.reply(`Raid time updated for channel ${channel.name}!`);
 
-    const command = interaction.commandName;
-    const args = interaction.options;
+  } else if (interaction.commandName === "setavatar") {
+    console.log(`Interaction received: setavatar command`);
+    const urlOption = interaction.options.get("url");
+    const url = urlOption.value;
 
-    if (command === 'blame') {
-        const member = interaction.options.getMember('user');
-        const count = interaction.options.getInteger('count');
+    // Set the bot's avatar
+    await client.user.setAvatar(url);
 
-        if (!member) {
-            await interaction.reply('You need to specify a user to blame.');
-            return;
-        }
+    await interaction.reply(`Set the bot's avatar to ${url}`);
 
-        if (!count || count < 1 || count > 10) {
-            await interaction.reply('You need to specify a number between 1 and 10.');
-            return;
-        }
-
-        const name = member.nickname || member.user.username;
-        const id = member.id;
-
-        const lastBlameTime = blameCooldowns.get(id) || 0;
-        if (lastBlameTime !== 0 && Date.now() - lastBlameTime < config.cooldown) {
-            const remainingTime = new Date(lastBlameTime + config.cooldown);
-            const remainingTimeString = `<t:${Math.floor(remainingTime.getTime() / 1000)}:t>`;
-            await interaction.reply({
-                content: `You can only blame ${name} once every 5 minutes. Please try again at ${remainingTimeString}.`,
-                ephemeral: true
-            });
-            return;
-        }
-
-        const userObj = data[id] || {
-            name,
-            blameCount: 0,
-            blames: {},
-            cooldown: 0
-        };
-        userObj.blameCount += count;
-        userObj.blames[serenaId] = userObj.blames[serenaId] || 0;
-        userObj.blames[serenaId] += count;
-        data[id] = userObj;
-
-        // Update cooldown data in both the data object and the blameCooldowns map
-        const currentTime = Date.now();
-        const cooldownTime = currentTime + config.cooldown;
-        userObj.cooldown = cooldownTime;
-        data[id].cooldown = cooldownTime;
-        blameCooldowns.set(id, cooldownTime);
-
-        await saveData();
-        blameCounts.set(id, userObj.blameCount);
-
-        await interaction.reply(`${name} has been blamed ${userObj.blameCount} times.`);
-
-    } else if (command === 'top') {
-        const count = 5;
-
-        const users = Object.values(data)
-            .filter(user => user.blames[serenaId] !== undefined && user.blames[serenaId] > 0)
-            .sort((a, b) => b.blames[serenaId] - a.blames[serenaId])
-            .slice(0, count);
-
-        const response = users.map((user, index) => `${index + 1}. ${user.name} - ${user.blames[serenaId]}`).join('\n');
-
-        const embed = {
-            color: 0xff0000,
-            title: `Top ${count} people who have blamed Serena the most:`,
-            description: response,
-        };
-
-        await interaction.reply({
-            embeds: [embed]
-        });
-
-    } else if (command === 'setname') {
-        // Check that the user is the guild owner
-        if (interaction.member.id !== interaction.guild.ownerId) {
-            await interaction.reply({
-                content: 'Only the server owner can use this command.',
-                ephemeral: true
-            });
-            return;
-        }
-
-        // Get the desired bot name from the command options
-        const newName = interaction.options.getString('name', true);
-
-        // Update the guild's bot nickname
-        try {
-            await interaction.guild.members.me.setNickname(newName);
-            await interaction.reply({
-                content: `Bot name updated to "${newName}"`,
-                ephemeral: true
-            });
-        } catch (error) {
-            console.error(error);
-            await interaction.reply({
-                content: 'An error occurred while updating the bot name. Please try again later.',
-                ephemeral: true
-            });
-        }
-
-    } else if (command === 'setavatar') {
-        // Check that the user is the guild owner
-        if (interaction.member.id !== interaction.guild.ownerId) {
-            await interaction.reply({
-                content: 'Only the server owner can use this command.',
-                ephemeral: true
-            });
-            return;
-        }
-
-        // Get the URL of the desired avatar image from the command options
-        const avatarUrl = interaction.options.getString('url', true);
-
-        // Update the bot's avatar
-        try {
-            await client.user.setAvatar(avatarUrl);
-            await interaction.reply({
-                content: 'Bot avatar updated successfully!',
-                ephemeral: true
-            });
-        } catch (error) {
-            console.error(error);
-            await interaction.reply({
-                content: 'An error occurred while updating the bot avatar. Please try again later.',
-                ephemeral: true
-            });
-        }
-
-    } else if (command === 'updateraidtime') {
-        const month = args.getString('month', true);
-        const day = args.getInteger('day', true);
-        const year = args.getInteger('year', true);
-        const time = args.getString('time', true);
-        const timezone = args.getString('timezone', true);
-        const nextRaid = args.getString('next_raid', true);
-        const channelName = args.getChannel('channel_name', true);
-
-        if (!channelName || channelName.type !== 'GUILD_TEXT') {
-            await interaction.reply({
-                content: 'You need to specify a valid text channel.',
-                ephemeral: true
-            });
-            return;
-        }
-
-        if (interaction.member.id !== interaction.guild.ownerId) {
-            console.log('User is not the server owner');
-            await interaction.reply({
-                content: 'You must be the server owner to use this command.',
-                ephemeral: true
-            });
-            return;
-        }
-
-        const maxDays = moment(`${year}-${month}`, 'YYYY-M').daysInMonth();
-        if (day > maxDays) {
-            await interaction.reply({
-                content: 'The selected month does not have that many days. Please choose a valid day.',
-                ephemeral: true
-            });
-            return;
-        }
-
-        const timestamp = moment.tz(`${year}-${month}-${day} ${time}:00`, 'YYYY-M-D HH:mm:ss', timezone).unix();
-
-        try {
-            await channelName.setTopic(`Next meet is <t:${timestamp}:f> ${nextRaid}`);
-            await interaction.reply({
-                content: 'Raid time updated successfully!',
-                ephemeral: true
-            });
-        } catch (error) {
-            console.error(error);
-            await interaction.reply({
-                content: 'An error occurred while updating the raid time. Please try again later.',
-                ephemeral: true
-            });
-        }
-    }
-
+    // Delete the reply after 5 seconds
+    const reply = await interaction.fetchReply();
+    setTimeout(() => {
+      reply.delete();
+    }, 5000);
+  } else {
+    console.log( 
+      `Interaction received: unknown command ${interaction.commandName}`
+    );
+  }
 });
 
 client.login(config.token);
+console.log(`Starting bot...`);
