@@ -175,15 +175,15 @@ client.on("interactionCreate", async (interaction) => {
             totalVotes += reaction.count - 1;
           }
         });
-
+        const totalText = `Total votes: ${totalVotes}`;
         const resultsText = results
           .map(({ option, count }) => `${option}: ${count} votes`)
           .join("\n\n");
-          
+
         const updatedEmbed = new EmbedBuilder()
           .setColor("#0099ff")
           .setTitle("Poll Results")
-          .setDescription(results.join("\n\n"))
+          .setDescription(`${totalText}\n\n${resultsText}`)
           .setFooter({
             text: `Poll created by ${interaction.user.username}`,
           });
