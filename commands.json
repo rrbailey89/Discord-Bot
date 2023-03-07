@@ -284,6 +284,12 @@
         "description": "Option 10 for the poll.",
         "type": 3,
         "required": false
+      },
+      {
+        "name": "duration",
+        "description": "The duration of the poll in minutes.",
+        "type": 4,
+        "required": false
       }
     ]
   }

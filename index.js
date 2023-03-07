@@ -150,6 +150,29 @@ client.on("interactionCreate", async (interaction) => {
     for (let i = 0; i < options.length; i++) {
       await pollMessage.react(emojis[i]);
     }
+
+    const duration = interaction.options.getInteger("duration");
+    if (duration) {
+      const durationInSeconds = Math.min(duration * 60, 30 * 60);
+      setTimeout(async () => {
+        const updatedMessage = await interaction.channel.messages.fetch(
+          pollMessage.id
+        );
+        
+        const updatedEmbed = new EmbedBuilder()
+          .setColor("#0099ff")
+          .setTitle("Poll Results")
+          .setDescription(results.join("\n\n"))
+          .setFooter({
+            text: `Poll created by ${interaction.user.username}`,
+          });
+
+        await pollMessage.edit({
+          content: `Poll has ended:`,
+          embeds: [updatedEmbed],
+        });
+      }, durationInSeconds * 1000);
+    }
   }
 });
 
