@@ -7,9 +7,7 @@
       "start": "node index.js"
     },
     "dependencies": {
-      "@discordjs/rest": "^1.5.0",
-      "discord.js": "^13.13.1",
-      "moment-timezone": "^0.5.41"
+      "discord.js": "^14.7.1"
     }
   }
   

@@ -214,5 +214,83 @@
         "required": true
       }
     ]
+  },
+  {
+    "name": "poll",
+    "description": "Create a poll with up to 10 options.",
+    "options": [
+      {
+        "name": "question",
+        "description": "The question for the poll.",
+        "type": 3,
+        "required": true
+      },
+      {
+        "name": "option1",
+        "description": "Option 1 for the poll.",
+        "type": 3,
+        "required": true
+      },
+      {
+        "name": "option2",
+        "description": "Option 2 for the poll.",
+        "type": 3,
+        "required": true
+      },
+      {
+        "name": "option3",
+        "description": "Option 3 for the poll.",
+        "type": 3,
+        "required": false
+      },
+      {
+        "name": "option4",
+        "description": "Option 4 for the poll.",
+        "type": 3,
+        "required": false
+      },
+      {
+        "name": "option5",
+        "description": "Option 5 for the poll.",
+        "type": 3,
+        "required": false
+      },
+      {
+        "name": "option6",
+        "description": "Option 6 for the poll.",
+        "type": 3,
+        "required": false
+      },
+      {
+        "name": "option7",
+        "description": "Option 7 for the poll.",
+        "type": 3,
+        "required": false
+      },
+      {
+        "name": "option8",
+        "description": "Option 8 for the poll.",
+        "type": 3,
+        "required": false
+      },
+      {
+        "name": "option9",
+        "description": "Option 9 for the poll.",
+        "type": 3,
+        "required": false
+      },
+      {
+        "name": "option10",
+        "description": "Option 10 for the poll.",
+        "type": 3,
+        "required": false
+      },
+      {
+        "name": "duration",
+        "description": "The duration of the poll in minutes.",
+        "type": 4,
+        "required": false
+      }
+    ]
   }
 ]
