@@ -154,11 +154,32 @@ client.on("interactionCreate", async (interaction) => {
     const duration = interaction.options.getInteger("duration");
     if (duration) {
       const durationInSeconds = Math.min(duration * 60, 30 * 60);
+      const results = options.map((option) => ({
+        option,
+        count: 0,
+      }));
+
       setTimeout(async () => {
         const updatedMessage = await interaction.channel.messages.fetch(
           pollMessage.id
         );
         
+        const reactions = updatedMessage.reactions.cache;
+        let totalVotes = 0;
+
+        reactions.forEach((reaction) => {
+          const emojiIndex = emojis.indexOf(reaction.emoji.name);
+          if (emojiIndex >= 0) {
+            const { count } = results[emojiIndex];
+            results[emojiIndex].count = count + reaction.count - 1;
+            totalVotes += reaction.count - 1;
+          }
+        });
+
+        const resultsText = results
+          .map(({ option, count }) => `${option}: ${count} votes`)
+          .join("\n\n");
+          
         const updatedEmbed = new EmbedBuilder()
           .setColor("#0099ff")
           .setTitle("Poll Results")
