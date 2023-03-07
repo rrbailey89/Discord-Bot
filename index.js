@@ -116,7 +116,18 @@ client.on("interactionCreate", async (interaction) => {
       return;
     }
 
-    const emojis = ["🇦", "🇧", "🇨", "🇩", "🇪", "🇫", "🇬", "🇭", "🇮", "🇯"];
+    const emojis = [
+      "🇦",
+      "🇧",
+      "🇨",
+      "🇩",
+      "🇪",
+      "🇫",
+      "🇬",
+      "🇭",
+      "🇮",
+      "🇯",
+    ];
 
     const embed = new EmbedBuilder()
       .setColor("#0099ff")
@@ -133,6 +144,7 @@ client.on("interactionCreate", async (interaction) => {
     const pollMessage = await interaction.reply({
       content: `Poll created by ${interaction.user.username}:`,
       embeds: [embed],
+      fetchReply: true
     });
 
     for (let i = 0; i < options.length; i++) {
