@@ -1,4 +1,4 @@
-const { Client } = require("discord.js");
+const { Client, EmbedBuilder } = require("discord.js");
 const client = new Client({ intents: 3276799 });
 const config = require("./config.json");
 
@@ -102,6 +102,42 @@ client.on("interactionCreate", async (interaction) => {
     console.log(
       `Interaction received: unknown command ${interaction.commandName}`
     );
+  }
+  if (interaction.commandName === "poll") {
+    const question = interaction.options.getString("question");
+    const options = [];
+    for (let i = 1; i <= 10; i++) {
+      const option = interaction.options.getString(`option${i}`);
+      if (option) options.push(option);
+    }
+
+    if (options.length < 2) {
+      await interaction.reply("You must provide at least 2 options");
+      return;
+    }
+
+    const emojis = ["🇦", "🇧", "🇨", "🇩", "🇪", "🇫", "🇬", "🇭", "🇮", "🇯"];
+
+    const embed = new EmbedBuilder()
+      .setColor("#0099ff")
+      .setTitle(question)
+      .setDescription(
+        options
+          .map((option, index) => `${emojis[index]} ${option}`)
+          .join("\n\n")
+      )
+      .setFooter({
+        text: `React with the corresponding emoji to vote`,
+      });
+
+    const pollMessage = await interaction.reply({
+      content: `Poll created by ${interaction.user.username}:`,
+      embeds: [embed],
+    });
+
+    for (let i = 0; i < options.length; i++) {
+      await pollMessage.react(emojis[i]);
+    }
   }
 });
 
