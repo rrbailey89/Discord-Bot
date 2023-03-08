@@ -170,13 +170,7 @@ client.on("interactionCreate", async(interaction) => {
               let totalVotes = 0;
 
               for (const reaction of reactions.values()) {
-                // Ignore reactions from the bot
-                if (reaction.partial) {
-                   await reaction.fetch();
-                  }
-                if (reaction.me) continue;
-
-                  const emjoiIndex = emojis.indexOf(results[i].option);
+                  const emjoiIndex = emojis.indexOf(reaction.emoji.name);
                   if (emjoiIndex >= 0) {
                       const {
                           count,
