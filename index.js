@@ -190,7 +190,7 @@ client.on("interactionCreate", async(interaction) => {
                               voters.push(voterName);
                           }
                       });
-                      results[emjoiIndex].count = count + reaction.count;
+                      results[emjoiIndex].count = count + reaction.count - 1;
                       totalVotes += reaction.count - 1;
                   }
               }
