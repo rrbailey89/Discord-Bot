@@ -4,7 +4,7 @@ const {
 const {
     Routes
 } = require('discord-api-types/v9');
-const config = require('./config.json');
+const config = require('./config.js');
 const commands = require('./commands.json');
 
 const rest = new REST({
