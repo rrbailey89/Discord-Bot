@@ -196,7 +196,7 @@ client.on("interactionCreate", async(interaction) => {
                           option,
                           count,
                           voters
-                      }) => `${option}: ${count} votes (${voters.join(", ")}))`)
+                      }) => `${option}: ${count} votes (${voters.join(", ")})`)
                   .join("\n\n");
 
               const updatedEmbed = new EmbedBuilder()
