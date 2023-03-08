@@ -1,13 +1,10 @@
 import fetch from "node-fetch";
-import {
-  Client,
-  EmbedBuilder
-} from "discord.js";
+import Client from "discord.js";
+import EmbedBuilder from 'discord.js';
 const client = new Client({
   intents: 3276799
 });
 import config from './config.js';
-import EmbedBuilder from 'discord.js';
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}`);
 });
