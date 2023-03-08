@@ -3,5 +3,5 @@ export default {
     prefix: '',
     cooldown: 300000,
     clientId: '',
-    xivAPIKey: ''
+    xivApiKey: ''
   };
