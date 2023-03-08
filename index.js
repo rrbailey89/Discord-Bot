@@ -1,10 +1,13 @@
 import fetch from "node-fetch";
-import Client from "discord.js";
-import EmbedBuilder from 'discord.js';
+import {
+  Client,
+  EmbedBuilder
+} from "discord.js";
 const client = new Client({
   intents: 3276799
 });
 import config from './config.js';
+
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}`);
 });
@@ -246,7 +249,7 @@ client.on("interactionCreate", async(interaction) => {
         .setImage(result.Icon);
 
         console.log(`Sending embed: ${JSON.stringify(embed)}`);
-
+        
         await interaction.reply({ embeds: [embed] });
     } else {
         await interaction.reply(`No ${type} found with name ${name}`);
