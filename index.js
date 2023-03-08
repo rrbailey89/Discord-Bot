@@ -163,10 +163,8 @@ client.on("interactionCreate", async(interaction) => {
 
           setTimeout(async() => {
               const updatedMessage = await interaction.channel.messages.fetch(
-                      pollMessage.id);
-                      console.log('Updated message:', updatedMessage.content)                      
+                      pollMessage.id);                      
               const reactions = updatedMessage.reactions.cache;
-              console.log('Reactions:', reactions);
               let totalVotes = 0;
 
               for (const reaction of reactions.values()) {
@@ -174,7 +172,6 @@ client.on("interactionCreate", async(interaction) => {
                     // If the reaction is partial, fetch the full reaction object
                     await reaction.fetch();
                 }
-                console.log('Reaction:', reaction);
                 if (reaction.users.cache.has(client.user.id)) {
                     // If the bot is the one who reacted, ignore it
                     continue;
