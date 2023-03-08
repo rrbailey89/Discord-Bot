@@ -1,8 +1,8 @@
 import fetch from "node-fetch";
-const {
+import {
   Client,
   EmbedBuilder
-} = require("discord.js");
+} from "discord.js";
 const client = new Client({
   intents: 3276799
 });
