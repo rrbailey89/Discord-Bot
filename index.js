@@ -227,11 +227,18 @@ client.on("interactionCreate", async(interaction) => {
     const type = typeOption.value;
     const name = nameOption.value;
 
+    console.log(`type: ${type}`);
+    console.log(`name: ${name}`);
+
     const apiKey = config.xivApiKey;
     const url = `https://xivapi.com/search?indexes=${type}&string=${name}&private_key=${apiKey}`;
 
+    console.log(`Fetching data from ${url}`);
+
     const response = await fetch(url);
     const data = await response.json();
+
+    console.log(`Received data: ${JSON.stringify(data)}`);
 
     if (data.Results.length > 0) {
         const result = data.Results[0];
@@ -241,6 +248,8 @@ client.on("interactionCreate", async(interaction) => {
         .addField("Description", result.Description || "None")
         .setImage(result.Icon);
 
+        console.log(`Sending embed: ${JSON.stringify(embed)}`);
+        
         await interaction.reply({ embeds: [embed] });
     } else {
         await interaction.reply(`No ${type} found with name ${name}`);
