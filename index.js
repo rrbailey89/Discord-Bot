@@ -2,6 +2,7 @@ const {
   Client,
   EmbedBuilder
 } = require("discord.js");
+import fetch from "node-fetch";
 const client = new Client({
   intents: 3276799
 });
