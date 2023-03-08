@@ -142,7 +142,7 @@ client.on("interactionCreate", async (interaction) => {
       });
 
     const pollMessage = await interaction.reply({
-      content: `Poll created by ${interaction.user.username}:`,
+      content: `Poll created by ${interaction.member.displayName}:`,
       embeds: [embed],
       fetchReply: true
     });
@@ -157,6 +157,7 @@ client.on("interactionCreate", async (interaction) => {
       const results = options.map((option) => ({
         option,
         count: 0,
+        voters: [],
       }));
 
       setTimeout(async () => {
@@ -164,20 +165,26 @@ client.on("interactionCreate", async (interaction) => {
           pollMessage.id
         );
         
-        const reactions = updatedMessage.reactions.cache;
-        let totalVotes = 0;
-
-        reactions.forEach((reaction) => {
-          const emojiIndex = emojis.indexOf(reaction.emoji.name);
-          if (emojiIndex >= 0) {
-            const { count } = results[emojiIndex];
-            results[emojiIndex].count = count + reaction.count - 1;
-            totalVotes += reaction.count - 1;
-          }
+      for (const reaction of reactions.values()) {
+        const emjoiIndex = emojis.indexOf(reaction.emoji.name);
+        if (emjoiIndex >= 0) {
+          const { count, voters } = results[emjoiIndex];
+          const reactionUsers = await reaction.users.fetch();
+          reactionUsers.forEach((user) => {
+            const member = interaction.guild.members.cache.get(user.id);
+            const voterName = member.nickname || user.username;
+            if (!voters.includes(voterName)) {
+              voters.push(voterName);
+            }
         });
+        results[emjoiIndex].count = count + reaction.count - 1;
+        totalVotes += reaction.count - 1;
+      }
+    }
+    
         const totalText = `Total votes: ${totalVotes}`;
         const resultsText = results
-          .map(({ option, count }) => `${option}: ${count} votes`)
+          .map(({ option, count, voters }) => `${option}: ${count} votes (${voters.join(", ")}))`)
           .join("\n\n");
 
         const updatedEmbed = new EmbedBuilder()
@@ -185,7 +192,7 @@ client.on("interactionCreate", async (interaction) => {
           .setTitle("Poll Results")
           .setDescription(`${totalText}\n\n${resultsText}`)
           .setFooter({
-            text: `Poll created by ${interaction.user.username}`,
+            text: `Poll created by ${interaction.member.displayName}`,
           });
 
         await pollMessage.edit({
