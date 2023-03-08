@@ -170,10 +170,14 @@ client.on("interactionCreate", async(interaction) => {
               let totalVotes = 0;
 
               for (const reaction of reactions.values()) {
-                
-                // Ignore reactions from the bot
-                if (reaction.user.id === client.user.id) continue;
-
+                if (reaction.partial) {
+                    // If the reaction is partial, fetch the full reaction object
+                    await reaction.fetch();
+                }
+                if (reaction.users.cache.has(client.user.id)) {
+                    // If the bot is the one who reacted, ignore it
+                    continue;
+                }
                   const emjoiIndex = emojis.indexOf(reaction.emoji.name);
                   if (emjoiIndex >= 0) {
                       const {
