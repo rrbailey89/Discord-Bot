@@ -242,13 +242,14 @@ client.on("interactionCreate", async(interaction) => {
 
     if (data.Results.length > 0) {
         const result = data.Results[0];
+        const iconUrl = `https://xivapi.com${result.Icon}`;
         const embed = new EmbedBuilder()
         .setTitle(result.Name)
         .setURL(`https://xivapi.com/${type}/${result.ID}`)
         .addFields(
             { name: 'Description', value: result.Description || 'None'},
             )
-        .setImage(result.Icon);
+        .setImage(iconUrl);
 
         console.log(`Sending embed: ${JSON.stringify(embed)}`);
         
