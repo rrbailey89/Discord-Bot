@@ -326,6 +326,18 @@
           "description": "The name of the data to search for.",
           "type": 3,
           "required": true
+        },
+        {
+          "name": "server",
+          "description": "The server name for the character",
+          "type": 3,
+          "required": false,
+          "choices": [
+            {
+              "name": "Jenova",
+              "value": "Jenova"
+            }
+          ]
         }
       ]
   }

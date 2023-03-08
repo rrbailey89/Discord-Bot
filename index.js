@@ -224,14 +224,22 @@ client.on("interactionCreate", async(interaction) => {
   if (interaction.commandName === "xiv") {
     const typeOption = interaction.options.get("type");
     const nameOption = interaction.options.get("name");
-    const type = typeOption.value;
-    const name = nameOption.value;
+    var type = typeOption.value;
+    var name = nameOption.value;
 
     console.log(`type: ${type}`);
     console.log(`name: ${name}`);
 
     const apiKey = config.xivApiKey;
-    const url = `https://xivapi.com/search?indexes=${type}&string=${name}&private_key=${apiKey}`;
+    var url;
+    if (type === "character") {
+      const serverOption = interaction.options.get("server");
+      const server = serverOption.value;
+      name = name.replace(/ /g, "+"); // Replace spaces with + signs
+      url = `https://xivapi.com/character/search?name=${name}&server=${server}&private_key=${apiKey}`;
+    } else {
+      url = `https://xivapi.com/search?indexes=${type}&string=${name}&private_key=${apiKey}`;
+    }
 
     console.log(`Fetching data from ${url}`);
 
