@@ -176,7 +176,7 @@ client.on("interactionCreate", async(interaction) => {
                   }
                 if (reaction.me) continue;
 
-                  const emjoiIndex = emojis.indexOf(reaction.emoji.name);
+                  const emjoiIndex = emojis.indexOf(results[i].option);
                   if (emjoiIndex >= 0) {
                       const {
                           count,
