@@ -1,4 +1,4 @@
-[
+export default [
   {
     "name": "grantrole",
     "description": "Grant a role to a user",
