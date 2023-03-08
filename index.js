@@ -165,6 +165,8 @@ client.on("interactionCreate", async (interaction) => {
           pollMessage.id
         );
         
+        const reactions = updatedMessage.reactions.cache;
+        
       for (const reaction of reactions.values()) {
         const emjoiIndex = emojis.indexOf(reaction.emoji.name);
         if (emjoiIndex >= 0) {
