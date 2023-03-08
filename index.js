@@ -178,6 +178,7 @@ client.on("interactionCreate", async(interaction) => {
                       } = results[emjoiIndex];
                       const reactionUsers = await reaction.users.fetch();
                       reactionUsers.forEach((user) => {
+                        if (user.bot) return; // skip bots vote
                           const member = interaction.guild.members.cache.get(user.id);
                           const voterName = member.nickname || user.username;
                           if (!voters.includes(voterName)) {
