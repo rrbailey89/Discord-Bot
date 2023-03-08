@@ -4,8 +4,8 @@ const {
 const {
     Routes
 } = require('discord-api-types/v9');
-import config from './config.js';
-import commands from'./commands.json' assert { type: "json" };
+const config = require('./config.js');
+const commands = require('./commands.json');
 
 const rest = new REST({
     version: '9'
