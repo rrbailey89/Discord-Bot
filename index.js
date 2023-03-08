@@ -6,7 +6,7 @@ import {
 const client = new Client({
   intents: 3276799
 });
-const config = require("./config.json");
+import config from './config.json';
 
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}`);

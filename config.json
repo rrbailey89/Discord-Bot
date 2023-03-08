@@ -1,8 +1,8 @@
-{
+module.exports = {
     "token": "",
-    "prefix": "/",
+    "prefix": "",
     "cooldown": 300000,
     "clientId": "",
     "xivAPIKey": ""
-  }
+  };
   
