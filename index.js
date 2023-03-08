@@ -2,6 +2,7 @@ const {
   Client,
   EmbedBuilder
 } = require("discord.js");
+const fetch = require("node-fetch");
 const client = new Client({
   intents: 3276799
 });
@@ -219,6 +220,31 @@ client.on("interactionCreate", async(interaction) => {
               });
           }, durationInSeconds * 1000);
       }
+  }
+  if (interaction.commandName === "xiv") {
+    const typeOption = interaction.options.get("type");
+    const nameOption = interaction.options.get("name");
+    const type = typeOption.value;
+    const name = nameOption.value;
+
+    const apiKey = config.xivApiKey;
+    const url = `https://xivapi.com/search?indexes=${type}&string=${name}&private_key=${apiKey}`;
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (data.Results.length > 0) {
+        const result = data.Results[0];
+        const embed = new EmbedBuilder()
+        .setTitle(result.Name)
+        .setURL(`https://xivapi.com/${type}/${result.ID}`)
+        .addField("Description", result.Description || "None")
+        .setImage(result.Icon);
+
+        await interaction.reply({ embeds: [embed] });
+    } else {
+        await interaction.reply(`No ${type} found with name ${name}`);
+    }
   }
 });
 
