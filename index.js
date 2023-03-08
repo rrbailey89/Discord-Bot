@@ -6,7 +6,7 @@ import {
 const client = new Client({
   intents: 3276799
 });
-import config from './config.json';
+import config from './config.json' assert { type: "json" };
 
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}`);
