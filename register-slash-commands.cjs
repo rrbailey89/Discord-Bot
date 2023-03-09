@@ -4,7 +4,6 @@ const {
 const {
     Routes
 } = require('discord-api-types/v9');
-const commands = require('./commands.js');
 let config;
 
 (async () => {
