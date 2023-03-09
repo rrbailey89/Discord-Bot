@@ -120,6 +120,7 @@ client.on("interactionCreate", async(interaction) => {
 `Interaction received: unknown command ${interaction.commandName}`);
   }
   if (interaction.commandName === "poll") {
+    // Get the question and options from the user's input
       const question = interaction.options.getString("question");
       const options = [];
       for (let i = 1; i <= 10; i++) {
@@ -127,12 +128,12 @@ client.on("interactionCreate", async(interaction) => {
           if (option)
               options.push(option);
       }
-
+      // Make sure that there are at least two options
       if (options.length < 2) {
           await interaction.reply("You must provide at least 2 options");
           return;
       }
-
+      // Create an array of emojis to use as reaction options
       const emojis = [
           "🇦",
           "🇧",
@@ -145,7 +146,7 @@ client.on("interactionCreate", async(interaction) => {
           "🇮",
           "🇯",
       ];
-
+      // Create an embed to display the poll
       const embed = new EmbedBuilder()
           .setColor("#0099ff")
           .setTitle(question)
@@ -156,7 +157,7 @@ client.on("interactionCreate", async(interaction) => {
           .setFooter({
               text: `React with the corresponding emoji to vote`,
           });
-
+      // Post the poll message and add reaction options
       const pollMessage = await interaction.reply({
           content: `Poll created by ${interaction.member.displayName}:`,
           embeds: [embed],
@@ -166,24 +167,27 @@ client.on("interactionCreate", async(interaction) => {
       for (let i = 0; i < options.length; i++) {
           await pollMessage.react(emojis[i]);
       }
-
+      // If a duration was specified, set a timeout to end the poll
       const duration = interaction.options.getInteger("duration");
       if (duration) {
+        // Calculate the duration in seconds, limiting it to a maximum of 30 minutes
           const durationInSeconds = Math.min(duration * 60, 30 * 60);
+          // Initialize the poll results with zero votes for each option
           const results = options.map((option) => ({
                       option,
                       count: 0,
                       voters: [],
                   }));
-
+          // Set a timeout to execute after the specified duration has elapsed
           setTimeout(async() => {
+            // Retrieve the updated message to get the latest reaction counts
               const updatedMessage = await interaction.channel.messages.fetch(
                       pollMessage.id);
-
+                // Retrieve the reactions on the poll message
               const reactions = updatedMessage.reactions.cache;
 
               let totalVotes = 0;
-
+                // Iterate over each reaction to update the poll results
               for (const reaction of reactions.values()) {
                   const emjoiIndex = emojis.indexOf(reaction.emoji.name);
                   if (emjoiIndex >= 0) {
@@ -194,18 +198,21 @@ client.on("interactionCreate", async(interaction) => {
                       const reactionUsers = await reaction.users.fetch();
                       reactionUsers.forEach((user) => {
                         if (user.bot) return; // skip bots vote
-                          const member = interaction.guild.members.cache.get(user.id);
+                        // Get the member object for the user and add their name to the list of voters  
+                        const member = interaction.guild.members.cache.get(user.id);
                           const voterName = member.nickname || user.username;
                           if (!voters.includes(voterName)) {
                               voters.push(voterName);
                           }
                       });
+                      // Update the vote count for the option and add it to the total vote count
                       results[emjoiIndex].count = count + reaction.count - 1;
                       totalVotes += reaction.count - 1;
                   }
               }
-
+              // Calculate the total number of votes across all options
               const totalText = `Total votes: ${totalVotes}`;
+              // Generate a string displaying the vote count for each option, along with the names of the members who voted for it
               const resultsText = results
                   .map(({
                           option,
@@ -219,7 +226,7 @@ client.on("interactionCreate", async(interaction) => {
                         }
                         })
                   .join("\n\n");
-
+              // Create an embed to display the poll results
               const updatedEmbed = new EmbedBuilder()
                   .setColor("#0099ff")
                   .setTitle("Poll Results")
@@ -227,11 +234,12 @@ client.on("interactionCreate", async(interaction) => {
                   .setFooter({
                       text: `Poll created by ${interaction.member.displayName}`,
                   });
-
+              // Edit the poll message to display the results
               await pollMessage.edit({
                   content: `Poll has ended:`,
                   embeds: [updatedEmbed],
               });
+             // Set a timeout to end the poll after the specified duration has elapsed 
           }, durationInSeconds * 1000);
       }
   }
@@ -272,7 +280,36 @@ client.on("interactionCreate", async(interaction) => {
             { name: 'Description', value: result.Description || "None"},
             )
         .setImage(iconUrl);
+    
+    if (type === "character") {
+      // Add additional fields for character info
+      const server = result.Server;
+      const portraitUrl = `https://xivapi.com${result.Portrait}`;
 
+      embed.addFields(
+        { name: "Server", value: server },
+        { name: "Portrait", value: portraitUrl },
+        { name: "Race", value: result.Race },
+        { name: "Gender", value: result.Gender },
+        { name: "Nameday", value: result.Nameday },
+        { name: "Guardian", value: result.GuardianDeity },
+        { name: "Grand Company", value: result.FreeCompanyName }
+      );
+
+    } else {
+      // Add additional fields for item info
+      const itemLevel = result.ItemLevel;
+      const itemCategory = result.ItemCategory.Name;
+      const itemRarity = result.Rarity;
+      const itemDescription = result.Description;
+      
+      embed.addFields(
+        { name: "Item Level", value: itemLevel },
+        { name: "Item Category", value: itemCategory },
+        { name: "Item Rarity", value: itemRarity },
+        { name: "Description", value: itemDescription }
+      );      
+    }
         console.log(`Sending embed: ${JSON.stringify(embed)}`);
         
         await interaction.reply({ embeds: [embed] });
