@@ -4,8 +4,12 @@ const {
 const {
     Routes
 } = require('discord-api-types/v9');
-const config = require('./config.js');
 const commands = require('./commands.json');
+let config;
+
+(async () => {
+    config = await import('./config.js');
+})();
 
 const rest = new REST({
     version: '9'
