@@ -255,7 +255,7 @@ client.on("interactionCreate", async(interaction) => {
         .setTitle(result.Name)
         .setURL(`https://xivapi.com/${type}/${result.ID}`)
         .addFields(
-            { name: 'Description', value: result.Description || None},
+            { name: 'Description', value: result.Description || "None"},
             )
         .setImage(iconUrl);
 
