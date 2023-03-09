@@ -1,52 +1,66 @@
+// Import required modules
 import fetch from "node-fetch";
+
+// Import Discord.js and constructors to create a client
 import {
   Client,
   EmbedBuilder
 } from "discord.js";
+
+// Import the configuration from a seperate file
+import config from './config.js';
+
+// Create the client and set the intents (permissions)
 const client = new Client({
   intents: 3276799
 });
-import config from './config.js';
 
+// When the bot is ready to start, log a message
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}`);
 });
 
-// Listen for rate limit events
+// Listen for rate limit events adn log them
 client.rest.on("rateLimited", (rateLimitedInfo) => {
   console.log(`Rate limited: ${JSON.stringify(rateLimitedInfo)}`);
 });
 
+// Listen for interactionCreate events
 client.on("interactionCreate", async(interaction) => {
   if (!interaction.isCommand()) {
+    // If the interaction is not a command, log it and return
       console.log(`Interaction received: not a command`);
       return;
   }
 
   if (interaction.commandName === "grantrole") {
+        // If the command is grantrole, log it, get the role and user options and run the grantrole function
       console.log(`Interaction received: grantrole command`);
       const roleOption = interaction.options.get("role");
       const userOption = interaction.options.get("user");
       const roleID = roleOption.value;
       const userID = userOption.value;
-
+      
+      // Get the guild, member, and role objects from the interaction
       const guild = interaction.guild;
       const member = await guild.members.fetch(userID);
       const role = guild.roles.cache.get(roleID);
 
       if (member.roles.cache.has(roleID)) {
-          // If the member already has the role, remove it
+          // If the member already has the role, remove it and log a message
           await member.roles.remove(role);
           console.log(`Removed ${role.name} role from <@${userID}>`);
+          // Reply to the interaction with a message and delete it after 5 seconds
           const reply = await interaction.reply(
 `Removed ${role.name} role from <@${userID}>`);
           setTimeout(() => {
               interaction.deleteReply();
           }, 5000);
       } else {
-          // If the member does not have the role, grant it
+          // If the member does not have the role, grant it and log a message
           await member.roles.add(role);
           console.log(`Added ${role.name} role to <@${userID}>`);
+          // Reply to the interaction with a message and delete it after 5 seconds
           const reply = await interaction.reply(
 `Added ${role.name} role to <@${userID}>`);
           setTimeout(() => {
