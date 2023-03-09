@@ -9,6 +9,7 @@ let config;
 
 (async () => {
     config = await import('./config.js');
+    commands = await import('./commands.js')
 })();
 
 const rest = new REST({
