@@ -286,11 +286,18 @@ client.on("interactionCreate", async(interaction) => {
       const character = data.Results[0];
       const server = character.Server;
       const portraitUrl = `https://xivapi.com${character.Avatar}`;
+      const raceId = character.Race;
+
+      // Make a new API call to get the race name
+      const raceUrl = `https://xivapi.com/search?indexes=Race&string=${raceId}&private_key=${apiKey}`;
+      const raceResponse = await fetch(raceUrl);
+      const raceData = await raceResponse.json();
+      const raceName = raceData.Results[0].Name;
 
       embed.addFields(
         { name: 'Server', value: `${server}` },
         { name: 'Portrait', value: `${portraitUrl}` },
-        { name: 'Race', value: `${character.Race.Name}` },
+        { name: 'Race', value: `${raceName}` },
         { name: 'Gender', value: `${character.Gender}` },
         { name: 'Nameday', value: `${character.Nameday}` },
         { name: 'Guardian', value: `${character.GuardianDeity.Name}` },
