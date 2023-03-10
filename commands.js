@@ -290,56 +290,8 @@ export default [
         "description": "The duration of the poll in minutes.",
         "type": 4,
         "required": false
-      }
+      },
     ]
-  },
-  {
-      "name": "xiv",
-      "description": "Search for Final Fantasy XIV data on XIVAPI.",
-      "options": [
-        {
-          "name": "type",
-          "description": "The type of data to search for.",
-          "type": 3,
-          "choices": [
-            {
-              "name": "Item",
-              "value": "item"
-            },
-            {
-              "name": "Free Company",
-              "value": "freecompany"
-            },
-            {
-              "name": "Quest",
-              "value": "quest"
-            },
-            {
-              "name": "Character",
-              "value": "character"
-            }
-          ],
-          "required": true
-        },
-        {
-          "name": "name",
-          "description": "The name of the data to search for.",
-          "type": 3,
-          "required": true
-        },
-        {
-          "name": "server",
-          "description": "The server name for the character",
-          "type": 3,
-          "required": false,
-          "choices": [
-            {
-              "name": "Jenova",
-              "value": "Jenova"
-            }
-          ]
-        }
-      ]
   }
   
 ]
