@@ -245,7 +245,7 @@ client.on("interactionCreate", async(interaction) => {
       }
   }
   if (interaction.commandName === "xiv") {
-    const XIVAPI = new xiv({private_key: config.xivApiKey});
+    const xiv = new XIVAPI ({private_key: config.xivApiKey});
     const typeOption = interaction.options.get("type");
     const nameOption = interaction.options.get("name");
     var type = typeOption.value;
@@ -260,7 +260,7 @@ client.on("interactionCreate", async(interaction) => {
       name = name.replace(/ /g, "+"); // Replace spaces with + signs
       
       try {
-        const response = await xivApi.character.search(name, {server: server});
+        const response = await xiv.character.search(name, {server: server});
         console.log(`Received data: ${JSON.stringify(response)}`);
 
         if (response.Results.length > 0) {
@@ -292,7 +292,7 @@ client.on("interactionCreate", async(interaction) => {
 
 } else {
     try {
-        const response = await xivApi.search(name, {indexes: type});
+        const response = await xiv.search(name, {indexes: type});
         console.log(`Received data: ${JSON.stringify(response)}`);
 
         if (response.Results.length > 0) {
