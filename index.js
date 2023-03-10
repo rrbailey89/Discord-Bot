@@ -1,7 +1,8 @@
 // Import Discord.js and constructors to create a client
 import {
   Client,
-  EmbedBuilder
+  EmbedBuilder,
+  AuditLogEvent
 } from "discord.js";
 
 // Import the configuration from a seperate file
@@ -240,7 +241,57 @@ client.on("interactionCreate", async(interaction) => {
           }, durationInSeconds * 1000);
       }
   }
+if (interaction.commandName === 'kick') {
+  // Check if the user has permission to kick members
+  if (!interaction.member.permissions.has('KICK_MEMBERS')) {
+    await interaction.reply('You do not have permission to kick members.');
+    return;
+  }
+}
+// Get the member to kick
+const member = interaction.options.getMember('member');
 
+// Check if the bot can kick the member
+if (!member.kickable) {
+  await interaction.reply('The bot cannot kick this user.');
+  return;
+}
+
+// Get the reason for kicking the member
+const reason = interaction.options.getString('reason');
+
+try {
+  // Kick the member
+  await member.kick(reason);
+
+  // Log the kick in the server's audit log
+  const logEmbed = new EmbedBuilder()
+    .setTitle(`Member Kicked: ${member.displayName}`)
+    .addField('Member', member.toString(), true)
+    .addField('Moderator', interaction.user.toString(), true)
+    .addField('Reason', reason)
+    .setColor('#ff0000')
+    .setTimestamp();
+
+    const auditlog = await interaction.guild.fetchAuditLogs({
+      type: 'MEMBER_KICK',
+      limit: 1
+    });
+  const auditLogEntry = auditlog.entries.first();
+  if (auditLogEntry) {
+    logEmbed.setFooter(`Kicked by ${auditLogEntry.executor.tag}`, auditLogEntry.executor.avatarURL({ dynamic: true }));
+  }
+  const logChannel = interaction.guild.channels.cache.find(channel => channel.name === 'audit-log');
+  if (logChannel) {
+    await logChannel.send({ embeds: [logEmbed] });
+  }
+
+  await interaction.reply(`${member.user.tag} has been kicked.`);
+} catch (error) {
+  console.error(error);
+  await interaction.reply('There was an error trying to kick the member.');
+  
+}
 });
 
 client.login(config.token);

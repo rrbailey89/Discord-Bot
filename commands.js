@@ -292,6 +292,24 @@ export default [
         "required": false
       },
     ]
+  },
+  {
+    "name": "kick",
+    "description": "Kick a user from the server.",
+    "options": [
+      {
+        "name": "member",
+        "description": "The member to kick.",
+        "type": 6,
+        "required": true
+      },
+      {
+        "name": "reason",
+        "description": "The reason for kicking the member.",
+        "type": 3,
+        "required": false
+      }
+    ]
   }
   
 ]
