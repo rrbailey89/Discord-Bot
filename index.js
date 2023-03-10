@@ -257,7 +257,8 @@ client.on("interactionCreate", async(interaction) => {
   
     try {
       // Defer the interaction first
-      await interaction.defer();
+      await interaction.deferReply();
+      await wait(4000);
       
       // Use the XIVAPI module to search for the specified item or character
       let response;
