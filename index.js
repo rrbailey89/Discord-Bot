@@ -1,6 +1,6 @@
 // Import required modules
 import fetch from "node-fetch";
-import xiv from "xivapi-js";
+import XIVAPI from "@xivapi/js";
 
 // Import Discord.js and constructors to create a client
 import {
@@ -245,7 +245,7 @@ client.on("interactionCreate", async(interaction) => {
       }
   }
   if (interaction.commandName === "xiv") {
-    const xivApi = new xiv({private_key: config.xivApiKey});
+    const XIVAPI = new xiv({private_key: config.xivApiKey});
     const typeOption = interaction.options.get("type");
     const nameOption = interaction.options.get("name");
     var type = typeOption.value;
