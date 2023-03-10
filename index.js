@@ -28,7 +28,7 @@ client.rest.on("rateLimited", (rateLimitedInfo) => {
 
 // Listen for interactionCreate events
 client.on("interactionCreate", async(interaction) => {
-  if (!interaction.isCommandName()) {
+  if (!interaction.isCommand()) {
     // If the interaction is not a command, log it and return
       console.log(`Interaction received: not a command`);
       return;
