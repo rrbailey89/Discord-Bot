@@ -287,13 +287,13 @@ client.on("interactionCreate", async(interaction) => {
       const portraitUrl = `https://xivapi.com${result.Portrait}`;
 
       embed.addFields(
-        { name: "Server", value: server },
-        { name: "Portrait", value: portraitUrl },
-        { name: "Race", value: result.Race },
-        { name: "Gender", value: result.Gender },
-        { name: "Nameday", value: result.Nameday },
-        { name: "Guardian", value: result.GuardianDeity },
-        { name: "Grand Company", value: result.FreeCompanyName }
+        { name: 'Server', value: server },
+        { name: 'Portrait', value: portraitUrl },
+        { name: 'Race', value: result.Race },
+        { name: 'Gender', value: result.Gender },
+        { name: 'Nameday', value: result.Nameday },
+        { name: 'Guardian', value: result.GuardianDeity },
+        { name: 'Grand Company', value: result.FreeCompanyName }
       );
 
     } else {
@@ -304,10 +304,10 @@ client.on("interactionCreate", async(interaction) => {
       const itemDescription = result.Description;
       
       embed.addFields(
-        { name: "Item Level", value: itemLevel },
-        { name: "Item Category", value: itemCategory },
-        { name: "Item Rarity", value: itemRarity },
-        { name: "Description", value: itemDescription }
+        { name: 'Item Level', value: itemLevel },
+        { name: 'Item Category', value: itemCategory },
+        { name: 'Item Rarity', value: itemRarity },
+        { name: 'Description', value: itemDescription }
       );      
     }
         console.log(`Sending embed: ${JSON.stringify(embed)}`);
