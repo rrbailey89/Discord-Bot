@@ -245,6 +245,7 @@ client.on("interactionCreate", async(interaction) => {
       }
   }
   if (interaction.commandName === "xiv") {
+    const xiv = new XIVAPI({private_key: config.xivApiKey});
     // Get the type and name options from the user's input
     const typeOption = interaction.options.get("type");
     const nameOption = interaction.options.get("name");
@@ -258,13 +259,13 @@ client.on("interactionCreate", async(interaction) => {
       // Use the XIVAPI module to search for the specified item or character
       let response;
       if (type === "item") {
-        response = await xivapi.data.item(name, { language: "en" });
+        response = await xiv.data.item(name, { language: "en" });
       } else if (type === "character") {
         const serverOption = interaction.options.get("server");
         const server = serverOption.value;
-        response = await xivapi.character.search(name, { server: server, columns: "ID" });
+        response = await xiv.character.search(name, { server: server, columns: "ID" });
         if (response.Results.length > 0) {
-          response = await xivapi.character.get(response.Results[0].ID, { language: "en" });
+          response = await xiv.character.get(response.Results[0].ID, { language: "en" });
         }
       } else {
         await interaction.reply(`Unknown type: ${type}`);
