@@ -283,17 +283,18 @@ client.on("interactionCreate", async(interaction) => {
     
     if (type === "character") {
       // Add additional fields for character info
-      const server = result.Server;
-      const portraitUrl = `https://xivapi.com${result.Portrait}`;
+      const character = data.Character
+      const server = character.Server;
+      const portraitUrl = `https://xivapi.com${character.Portrait}`;
 
       embed.addFields(
         { name: 'Server', value: `${server}` },
         { name: 'Portrait', value: `${portraitUrl}` },
-        { name: 'Race', value: `${result.Race}` },
-        { name: 'Gender', value: `${result.Gender}` },
-        { name: 'Nameday', value: `${result.Nameday}` },
-        { name: 'Guardian', value: `${result.GuardianDeity}` },
-        { name: 'Grand Company', value: `${result.FreeCompanyName}` }
+        { name: 'Race', value: `${character.Race.Name}` },
+        { name: 'Gender', value: `${character.Gender}` },
+        { name: 'Nameday', value: `${character.Nameday}` },
+        { name: 'Guardian', value: `${character.GuardianDeity.Name}` },
+        { name: 'Grand Company', value: `${character.FreeCompanyName}` }
       )
 
     } else {
