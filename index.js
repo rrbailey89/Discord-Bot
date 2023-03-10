@@ -1,7 +1,7 @@
 // Import required modules
 import fetch from "node-fetch";
 import XIVAPI from "@xivapi/js";
-import wait from "timers-promises".setTimeout;
+import wait from "timers-promises.setTimeout";
 
 // Import Discord.js and constructors to create a client
 import {
