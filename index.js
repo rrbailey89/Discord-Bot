@@ -1,9 +1,3 @@
-// Import required modules
-import fetch from "node-fetch";
-import fs from "fs";
-import XIVAPI from "@xivapi/js";
-import { setTimeout as wait } from "timers-promises";
-
 // Import Discord.js and constructors to create a client
 import {
   Client,
@@ -246,71 +240,6 @@ client.on("interactionCreate", async(interaction) => {
           }, durationInSeconds * 1000);
       }
   }
-  if (interaction.commandName === "xiv") {
-    const xiv = new XIVAPI({private_key: config.xivApiKey});
-    // Get the type and name options from the user's input
-    const typeOption = interaction.options.get("type");
-    const nameOption = interaction.options.get("name");
-    const type = typeOption.value;
-    const name = nameOption.value;
-  
-    console.log(`type: ${type}`);
-    console.log(`name: ${name}`);
-  
-    try {
-      // Defer the interaction first
-      await interaction.deferReply();
-      await wait(4000);
-
-      // Use the XIVAPI module to search for the specified item or character
-      let response;
-      if (type === "item") {
-        response = await xiv.data.item(name, { language: "en" });
-      } else if (type === "character") {
-        const serverOption = interaction.options.get("server");
-        const server = serverOption.value;
-        response = await xiv.character.search(name, { server: server, columns: "ID" });
-        if (response.Results.length > 0) {
-          response = await xiv.character.get(response.Results[0].ID, { language: "en" });
-        }
-      } else {
-        await interaction.reply(`Unknown type: ${type}`);
-        return;
-      }
-  
-      console.log(`Received data: ${JSON.stringify(response)}`);
-  
-      // Create an embed to display the search results
-      const embed = new EmbedBuilder()
-        .setTitle(response.Name)
-        .setURL(`https://xivapi.com/${type}/${response.ID}`)
-        .setDescription(response.Description || "None")
-        .setImage(`https://xivapi.com${response.Icon}`)
-        .addFields(
-          { name: 'Item Level', value: `${response.ItemLevel}` },
-          { name: 'Item Category', value: `${response.ItemCategory.Name}` },
-          { name: 'Item Rarity', value: `${response.Rarity}` },
-          { name: 'Race', value: `${response.Race || "Unknown"}` },
-          { name: 'Gender', value: `${response.Gender || "Unknown"}` },
-          { name: 'Nameday', value: `${response.Nameday || "Unknown"}` },
-          { name: 'Guardian', value: `${response.GuardianDeity ? response.GuardianDeity.Name : "Unknown"}` },
-          { name: 'Grand Company', value: `${response.FreeCompany ? response.FreeCompany.Name : "None"}` }
-        );
-  
-      console.log(`Sending embed: ${JSON.stringify(embed)}`);
-  
-      // Reply to the interaction with the embed
-      await interaction.editReply({ embeds: [embed] });
-  
-    } catch (error) {
-      // Log error to a file
-      fs.appendFileSync('error.log', `${new Date().toISOString()}: ${error.stack}\n`);
-      // Also log to console
-      console.error(error);
-  
-      await interaction.editReply(`Error occurred: ${error.message}`);
-    }
-  } 
 
 });
 
