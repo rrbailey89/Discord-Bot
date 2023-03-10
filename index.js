@@ -2,7 +2,7 @@
 import {
   Client,
   EmbedBuilder,
-  AuditLogEvent,
+  AuditLogEvent
 } from "discord.js";
 
 // Import the configuration from a seperate file
@@ -275,7 +275,7 @@ try {
     .setTimestamp();
 
     const auditlog = await interaction.guild.fetchAuditLogs({
-      type: 'AuditLogEvent.MemberKick',
+      type: 20,
       limit: 1
     });
   const auditLogEntry = auditlog.entries.first();
