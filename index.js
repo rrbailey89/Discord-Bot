@@ -1,5 +1,6 @@
 // Import required modules
 import fetch from "node-fetch";
+import fs from fs;
 import XIVAPI from "@xivapi/js";
 import { setTimeout as wait } from "timers-promises";
 
@@ -302,7 +303,11 @@ client.on("interactionCreate", async(interaction) => {
       await interaction.editReply({ embeds: [embed] });
   
     } catch (error) {
+      // Log error to a file
+      fs.appendFileSync('error.log', `${new Date().toISOString()}: ${error.stack}\n`);
+      // Also log to console
       console.error(error);
+  
       await interaction.editReply(`Error occurred: ${error.message}`);
     }
   } 
