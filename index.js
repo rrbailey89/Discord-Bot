@@ -28,7 +28,7 @@ client.rest.on("rateLimited", (rateLimitedInfo) => {
 
 // Listen for interactionCreate events
 client.on("interactionCreate", async(interaction) => {
-  if (!interaction.isCommand()) {
+  if (!interaction.isCommandName()) {
     // If the interaction is not a command, log it and return
       console.log(`Interaction received: not a command`);
       return;
@@ -245,82 +245,62 @@ client.on("interactionCreate", async(interaction) => {
       }
   }
   if (interaction.commandName === "xiv") {
-    const xiv = new XIVAPI ({private_key: config.xivApiKey});
+    // Get the type and name options from the user's input
     const typeOption = interaction.options.get("type");
     const nameOption = interaction.options.get("name");
-    var type = typeOption.value;
-    var name = nameOption.value;
+    const type = typeOption.value;
+    const name = nameOption.value;
 
     console.log(`type: ${type}`);
     console.log(`name: ${name}`);
 
-    if (type === "character") {
-      const serverOption = interaction.options.get("server");
-      const server = serverOption.value;
-      name = name.replace(/ /g, "+"); // Replace spaces with + signs
-      
-      try {
-        const response = await xiv.character.search(name, {server: server});
-        console.log(`Received data: ${JSON.stringify(response)}`);
-
-        if (response.Results.length > 0) {
-            const result = response.Results[0];
-            const iconUrl = `https://xivapi.com${result.Avatar}`;
-            const embed = new EmbedBuilder()
-                .setTitle(result.Name)
-                .setURL(`https://xivapi.com/${type}/${result.ID}`)
-                .addFields(
-                    { name: 'Server', value: `${result.Server}` },
-                    { name: 'Portrait', value: `${iconUrl}` },
-                    { name: 'Race', value: `${result.Race}` },
-                    { name: 'Gender', value: `${result.Gender}` },
-                    { name: 'Nameday', value: `${result.Nameday}` },
-                    { name: 'Guardian', value: `${result.GuardianDeity.Name}` },
-                    { name: 'Grand Company', value: `${result.FreeCompany.Name}` }
-                )
-                .setImage(iconUrl);
-            console.log(`Sending embed: ${JSON.stringify(embed)}`);
-
-            await interaction.reply({ embeds: [embed] });
-        } else {
-            await interaction.reply(`No ${type} found with name ${name}`);
-        }
-    } catch (error) {
-        console.error(error);
-        await interaction.reply(`Error occurred: ${error.message}`);
-    }
-
-} else {
     try {
-        const response = await xiv.search(name, {indexes: type});
-        console.log(`Received data: ${JSON.stringify(response)}`);
-
+      // Use the XIVAPI module to search for the specified item or character
+      let response;
+      if (type === "item") {
+        response = await xivapi.data.item(name, { language: "en" });
+      } else if (type === "character") {
+        const serverOption = interaction.options.get("server");
+        const server = serverOption.value;
+        response = await xivapi.character.search(name, { server: server, columns: "ID" });
         if (response.Results.length > 0) {
-            const result = response.Results[0];
-            const iconUrl = `https://xivapi.com${result.Icon}`;
-            const embed = new EmbedBuilder()
-                .setTitle(result.Name)
-                .setURL(`https://xivapi.com/${type}/${result.ID}`)
-                .addFields(
-                    { name: 'Description', value: result.Description || "None"},
-                    { name: 'Item Level', value: `${result.ItemLevel}` },
-                    { name: 'Item Category', value: `${result.ItemCategory.Name}` },
-                    { name: 'Item Rarity', value: `${result.Rarity}` },
-                    { name: 'Description', value: `${result.Description}` }
-                )
-                .setImage(iconUrl);
-            console.log(`Sending embed: ${JSON.stringify(embed)}`);
-
-            await interaction.reply({ embeds: [embed] });
-        } else {
-            await interaction.reply(`No ${type} found with name ${name}`);
+          response = await xivapi.character.get(response.Results[0].ID, { language: "en" });
         }
+      } else {
+        await interaction.reply(`Unknown type: ${type}`);
+        return;
+      }
+
+      console.log(`Received data: ${JSON.stringify(response)}`);
+
+      // Create an embed to display the search results
+      const embed = new EmbedBuilder()
+        .setTitle(response.Name)
+        .setURL(`https://xivapi.com/${type}/${response.ID}`)
+        .setDescription(response.Description || "None")
+        .setImage(`https://xivapi.com${response.Icon}`)
+        .addFields(
+          { name: 'Item Level', value: `${response.ItemLevel}` },
+          { name: 'Item Category', value: `${response.ItemCategory.Name}` },
+          { name: 'Item Rarity', value: `${response.Rarity}` },
+          { name: 'Race', value: `${response.Race || "Unknown"}` },
+          { name: 'Gender', value: `${response.Gender || "Unknown"}` },
+          { name: 'Nameday', value: `${response.Nameday || "Unknown"}` },
+          { name: 'Guardian', value: `${response.GuardianDeity ? response.GuardianDeity.Name : "Unknown"}` },
+          { name: 'Grand Company', value: `${response.FreeCompany ? response.FreeCompany.Name : "None"}` }
+        );
+
+      console.log(`Sending embed: ${JSON.stringify(embed)}`);
+
+      // Reply to the interaction with the embed
+      await interaction.reply({ embeds: [embed] });
+
     } catch (error) {
-        console.error(error);
-        await interaction.reply(`Error occurred: ${error.message}`);
+      console.error(error);
+      await interaction.reply(`Error occurred: ${error.message}`);
     }
   }
-}
+
 });
 
 client.login(config.token);
