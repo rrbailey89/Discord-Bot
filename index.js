@@ -304,10 +304,10 @@ client.on("interactionCreate", async(interaction) => {
       const itemDescription = result.Description;
       
       embed.addFields(
-        { name: 'Item Level', value: itemLevel },
-        { name: 'Item Category', value: itemCategory },
-        { name: 'Item Rarity', value: itemRarity },
-        { name: 'Description', value: itemDescription }
+        { name: 'Item Level', value: result.itemLevel },
+        { name: 'Item Category', value: result.itemCategory },
+        { name: 'Item Rarity', value: result.itemRarity },
+        { name: 'Description', value: result.itemDescription }
       );      
     }
         console.log(`Sending embed: ${JSON.stringify(embed)}`);
