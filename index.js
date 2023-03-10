@@ -1,6 +1,7 @@
 // Import required modules
 import fetch from "node-fetch";
 import XIVAPI from "@xivapi/js";
+import wait from "timers-promises";
 
 // Import Discord.js and constructors to create a client
 import {
@@ -259,7 +260,7 @@ client.on("interactionCreate", async(interaction) => {
       // Defer the interaction first
       await interaction.deferReply();
       await wait(4000);
-      
+
       // Use the XIVAPI module to search for the specified item or character
       let response;
       if (type === "item") {

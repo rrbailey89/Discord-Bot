@@ -10,7 +10,8 @@
     "dependencies": {
       "discord.js": "^14.7.1",
       "node-fetch": "^3.3.0",
-      "@xivapi/js": "^0.4.1"
+      "@xivapi/js": "^0.4.1",
+      "timers-promises": "^1.0.1"
     }
   }
   
