@@ -283,9 +283,9 @@ client.on("interactionCreate", async(interaction) => {
     
     if (type === "character") {
       // Add additional fields for character info
-      const character = data.Character
+      const character = data.Results[0];
       const server = character.Server;
-      const portraitUrl = `https://xivapi.com${character.Portrait}`;
+      const portraitUrl = `https://xivapi.com${character.Avatar}`;
 
       embed.addFields(
         { name: 'Server', value: `${server}` },
@@ -295,7 +295,7 @@ client.on("interactionCreate", async(interaction) => {
         { name: 'Nameday', value: `${character.Nameday}` },
         { name: 'Guardian', value: `${character.GuardianDeity.Name}` },
         { name: 'Grand Company', value: `${character.FreeCompanyName}` }
-      )
+      );
 
     } else {
       // Add additional fields for item info
