@@ -2,7 +2,7 @@
 import {
   Client,
   EmbedBuilder,
-  AuditLogEvent
+  AuditLogEvent,
 } from "discord.js";
 
 // Import the configuration from a seperate file
@@ -267,14 +267,15 @@ try {
   // Log the kick in the server's audit log
   const logEmbed = new EmbedBuilder()
     .setTitle(`Member Kicked: ${member.displayName}`)
-    .addField('Member', member.toString(), true)
-    .addField('Moderator', interaction.user.toString(), true)
-    .addField('Reason', reason)
+    .addFields(
+        { name: 'Member', value: `${member.toString()}`, inline: true },
+        { name: 'Moderator', value: `${interaction.user.toString()}`, inline: true },
+        { name: 'Reason', value: `${reason}`, inline: true },)
     .setColor('#ff0000')
     .setTimestamp();
 
     const auditlog = await interaction.guild.fetchAuditLogs({
-      type: 'MEMBER_KICK',
+      type: 'AuditLogEvent.MemberKick',
       limit: 1
     });
   const auditLogEntry = auditlog.entries.first();
@@ -290,7 +291,7 @@ try {
 } catch (error) {
   console.error(error);
   await interaction.reply('There was an error trying to kick the member.');
-  
+
 }
 });
 
