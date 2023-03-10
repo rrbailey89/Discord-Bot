@@ -1,6 +1,6 @@
 // Import required modules
 import fetch from "node-fetch";
-import fs from fs;
+import fs from "fs";
 import XIVAPI from "@xivapi/js";
 import { setTimeout as wait } from "timers-promises";
 
