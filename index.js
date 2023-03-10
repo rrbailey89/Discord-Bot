@@ -1,5 +1,6 @@
 // Import required modules
 import fetch from "node-fetch";
+import xiv from "xivapi-js";
 
 // Import Discord.js and constructors to create a client
 import {
@@ -244,6 +245,7 @@ client.on("interactionCreate", async(interaction) => {
       }
   }
   if (interaction.commandName === "xiv") {
+    const xivApi = new xiv({private_key: config.xivApiKey});
     const typeOption = interaction.options.get("type");
     const nameOption = interaction.options.get("name");
     var type = typeOption.value;
@@ -252,79 +254,73 @@ client.on("interactionCreate", async(interaction) => {
     console.log(`type: ${type}`);
     console.log(`name: ${name}`);
 
-    const apiKey = config.xivApiKey;
-    var url;
     if (type === "character") {
       const serverOption = interaction.options.get("server");
       const server = serverOption.value;
       name = name.replace(/ /g, "+"); // Replace spaces with + signs
-      url = `https://xivapi.com/character/search?name=${name}&server=${server}&private_key=${apiKey}`;
-    } else {
-      url = `https://xivapi.com/search?indexes=${type}&string=${name}&private_key=${apiKey}`;
-    }
-
-    console.log(`Fetching data from ${url}`);
-
-    const response = await fetch(url);
-    const data = await response.json();
-
-    console.log(`Received data: ${JSON.stringify(data)}`);
-
-    if (data.Results.length > 0) {
-        const result = data.Results[0];
-        const iconUrl = `https://xivapi.com${result.Icon}`;
-        const embed = new EmbedBuilder()
-        .setTitle(result.Name)
-        .setURL(`https://xivapi.com/${type}/${result.ID}`)
-        .addFields(
-            { name: 'Description', value: result.Description || "None"},
-            )
-        .setImage(iconUrl);
-    
-    if (type === "character") {
-      // Add additional fields for character info
-      const character = data.Results[0];
-      const server = character.Server;
-      const portraitUrl = `https://xivapi.com${character.Avatar}`;
-      const raceId = character.Race;
-
-      // Make a new API call to get the race name
-      const raceUrl = `https://xivapi.com/search?indexes=Race&string=${raceId}&private_key=${apiKey}`;
-      const raceResponse = await fetch(raceUrl);
-      const raceData = await raceResponse.json();
-      const raceName = raceData.Results[0].Name;
-
-      embed.addFields(
-        { name: 'Server', value: `${server}` },
-        { name: 'Portrait', value: `${portraitUrl}` },
-        { name: 'Race', value: `${raceName}` },
-        { name: 'Gender', value: `${character.Gender}` },
-        { name: 'Nameday', value: `${character.Nameday}` },
-        { name: 'Guardian', value: `${character.GuardianDeity.Name}` },
-        { name: 'Grand Company', value: `${character.FreeCompanyName}` }
-      );
-
-    } else {
-      // Add additional fields for item info
-      const itemLevel = result.ItemLevel;
-      const itemCategory = result.ItemCategory.Name;
-      const itemRarity = result.Rarity;
-      const itemDescription = result.Description;
       
-      embed.addFields(
-        { name: 'Item Level', value: `${itemLevel}` },
-        { name: 'Item Category', value: `${itemCategory}` },
-        { name: 'Item Rarity', value: `${itemRarity}` },
-        { name: 'Description', value: `${itemDescription}` }
-      )      
+      try {
+        const response = await xivApi.character.search(name, {server: server});
+        console.log(`Received data: ${JSON.stringify(response)}`);
+
+        if (response.Results.length > 0) {
+            const result = response.Results[0];
+            const iconUrl = `https://xivapi.com${result.Avatar}`;
+            const embed = new EmbedBuilder()
+                .setTitle(result.Name)
+                .setURL(`https://xivapi.com/${type}/${result.ID}`)
+                .addFields(
+                    { name: 'Server', value: `${result.Server}` },
+                    { name: 'Portrait', value: `${iconUrl}` },
+                    { name: 'Race', value: `${result.Race}` },
+                    { name: 'Gender', value: `${result.Gender}` },
+                    { name: 'Nameday', value: `${result.Nameday}` },
+                    { name: 'Guardian', value: `${result.GuardianDeity.Name}` },
+                    { name: 'Grand Company', value: `${result.FreeCompany.Name}` }
+                )
+                .setImage(iconUrl);
+            console.log(`Sending embed: ${JSON.stringify(embed)}`);
+
+            await interaction.reply({ embeds: [embed] });
+        } else {
+            await interaction.reply(`No ${type} found with name ${name}`);
+        }
+    } catch (error) {
+        console.error(error);
+        await interaction.reply(`Error occurred: ${error.message}`);
     }
-        console.log(`Sending embed: ${JSON.stringify(embed)}`);
-        
-        await interaction.reply({ embeds: [embed] });
-    } else {
-        await interaction.reply(`No ${type} found with name ${name}`);
+
+} else {
+    try {
+        const response = await xivApi.search(name, {indexes: type});
+        console.log(`Received data: ${JSON.stringify(response)}`);
+
+        if (response.Results.length > 0) {
+            const result = response.Results[0];
+            const iconUrl = `https://xivapi.com${result.Icon}`;
+            const embed = new EmbedBuilder()
+                .setTitle(result.Name)
+                .setURL(`https://xivapi.com/${type}/${result.ID}`)
+                .addFields(
+                    { name: 'Description', value: result.Description || "None"},
+                    { name: 'Item Level', value: `${result.ItemLevel}` },
+                    { name: 'Item Category', value: `${result.ItemCategory.Name}` },
+                    { name: 'Item Rarity', value: `${result.Rarity}` },
+                    { name: 'Description', value: `${result.Description}` }
+                )
+                .setImage(iconUrl);
+            console.log(`Sending embed: ${JSON.stringify(embed)}`);
+
+            await interaction.reply({ embeds: [embed] });
+        } else {
+            await interaction.reply(`No ${type} found with name ${name}`);
+        }
+    } catch (error) {
+        console.error(error);
+        await interaction.reply(`Error occurred: ${error.message}`);
     }
   }
+}
 });
 
 client.login(config.token);
