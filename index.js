@@ -280,7 +280,7 @@ try {
     });
   const auditLogEntry = auditlog.entries.first();
   if (auditLogEntry) {
-    logEmbed.setFooter(`Kicked by ${auditLogEntry.executor.tag}`, auditLogEntry.executor.avatarURL({ dynamic: true }));
+    logEmbed.setFooter({ text: `Kicked by ${auditLogEntry.executor.tag}`, iconURL: auditLogEntry.executor.avatarURL({ dynamic: true }) });
   }
   const logChannel = interaction.guild.channels.cache.find(channel => channel.name === 'audit-log');
   if (logChannel) {
