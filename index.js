@@ -251,11 +251,14 @@ client.on("interactionCreate", async(interaction) => {
     const nameOption = interaction.options.get("name");
     const type = typeOption.value;
     const name = nameOption.value;
-
+  
     console.log(`type: ${type}`);
     console.log(`name: ${name}`);
-
+  
     try {
+      // Defer the interaction first
+      await interaction.defer();
+      
       // Use the XIVAPI module to search for the specified item or character
       let response;
       if (type === "item") {
@@ -271,9 +274,9 @@ client.on("interactionCreate", async(interaction) => {
         await interaction.reply(`Unknown type: ${type}`);
         return;
       }
-
+  
       console.log(`Received data: ${JSON.stringify(response)}`);
-
+  
       // Create an embed to display the search results
       const embed = new EmbedBuilder()
         .setTitle(response.Name)
@@ -290,17 +293,17 @@ client.on("interactionCreate", async(interaction) => {
           { name: 'Guardian', value: `${response.GuardianDeity ? response.GuardianDeity.Name : "Unknown"}` },
           { name: 'Grand Company', value: `${response.FreeCompany ? response.FreeCompany.Name : "None"}` }
         );
-
+  
       console.log(`Sending embed: ${JSON.stringify(embed)}`);
-
+  
       // Reply to the interaction with the embed
-      await interaction.reply({ embeds: [embed] });
-
+      await interaction.editReply({ embeds: [embed] });
+  
     } catch (error) {
       console.error(error);
-      await interaction.reply(`Error occurred: ${error.message}`);
+      await interaction.editReply(`Error occurred: ${error.message}`);
     }
-  }
+  } 
 
 });
 
