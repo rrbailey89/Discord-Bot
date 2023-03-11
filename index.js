@@ -327,7 +327,7 @@ client.on("interactionCreate", async(interaction) => {
       }
 
       // Get the duration of the timeout
-      const duration = interaction.options.getInteger('duration') * 1000;
+      const duration = parseInt(interaction.options.getInteger('duration'));
 
       try {
           // Timeout the member
