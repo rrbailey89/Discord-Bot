@@ -312,7 +312,7 @@ client.on("interactionCreate", async(interaction) => {
 
   } else if (interaction.commandName === 'timeout') {
       // Check if the user has permission to moderate members
-      if (!interaction.member.permissions.has([PermissionsBitField.flags.ModerateMembers])) {
+      if (!interaction.member.permissions.has([PermissionsBitField.Flags.ModerateMembers])) {
           await interaction.reply('You do not have permission to moderate members.');
           return;
       }
