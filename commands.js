@@ -310,6 +310,29 @@ export default [
         "required": false
       }
     ]
+  },
+  {
+    "name": "timeout",
+    "description": "Put a user in timeout for a specified duration",
+    "options": [
+      {
+        "name": "user",
+        "description": "The user to put in timeout",
+        "type": 6,
+        "required": true
+      },
+      {
+        "name": "duration",
+        "description": "The duration of the timeout in minutes",
+        "type": 4,
+        "required": true
+      },
+      {
+        "name": "reason",
+        "description": "The reason for putting the user in timeout",
+        "type": 3,
+        "required": false
+      }
+    ]
   }
-  
 ]

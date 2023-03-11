@@ -293,7 +293,61 @@ try {
   await interaction.reply('There was an error trying to kick the member.');
 
 }
-});
+
+if (interaction.commandName === 'timeout') {
+  // Check if the user has permission to kick members
+  if (!interaction.member.permissions.has('MODERATE_MEMBERS')) {
+    await interaction.reply('You do not have permission to moderate members.');
+    return;
+  }
+
+  // Get the member to timeout
+const member = interaction.options.getMember('member');
+
+// Check if the bot can timeout the member
+if (!member.manageable) {
+  await interaction.reply('The bot cannot timeout this user.');
+  return;
+}
+
+// Get the duration of the timeout
+const duration = interaction.options.getInteger('duration');
+
+try {
+  // Timeout the member
+  await member.timeout({ reason: "Timeout Command", time: duration });
+
+  // Log the timeout in the server's audit log
+  const timeoutEmbed = new EmbedBuilder()
+    .setTitle(`Member Timed Out: ${member.displayName}`)
+    .addFields(
+        { name: 'Member', value: `${member.toString()}`, inline: true },
+        { name: 'Moderator', value: `${interaction.user.toString()}`, inline: true },
+        { name: 'Duration', value: `${duration} seconds`, inline: true },)
+    .setColor('#ff0000')
+    .setTimestamp();
+
+    const timeoutauditlog = await interaction.guild.fetchAuditLogs({
+      type: 24,
+      limit: 1,
+    });
+    const timeoutauditLogEntry = timeoutauditlog.entries.first();
+    if (timeoutauditLogEntry) {
+      timeoutEmbed.setFooter({ text: `Timed out by ${timeoutauditLogEntry.executor.tag}`, iconURL: timeoutauditLogEntry.executor.avatarURL({ dynamic: true }) });  
+    }
+    const logChannel = interaction.guild.channels.cache.find(channel => channel.name === 'audit-log');
+    if (logChannel) {
+      await logChannel.send({ embeds: [timeoutEmbed] });
+    }
+    await interaction.reply(`${member.user.tag} has been timed out`);
+  } catch (error) {
+    console.error(error);
+    await interaction.reply('There was an error trying to timeout the member.');
+  }
+
+  }
+}
+);
 
 client.login(config.token);
 console.log(`Starting bot...`);
