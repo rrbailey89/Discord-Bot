@@ -332,12 +332,11 @@ client.on("interactionCreate", async(interaction) => {
       // Convert the duration to milliseconds
       const durationInMilliseconds = durationInMinutes * 60 * 1000;
       console.log(`durationInMilliseconds: ${durationInMilliseconds}`);
+      // Get the reason for the timeout
+      
       try {
           // Timeout the member
-          await member.timeout({
-              reason: "Timeout Command",
-              time: durationInMilliseconds
-          });
+          await member.timeout(durationInMilliseconds, reason);
 
           // Log the timeout in the server's audit log
           const timeoutEmbed = new EmbedBuilder()
