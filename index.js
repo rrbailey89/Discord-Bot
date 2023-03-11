@@ -320,6 +320,9 @@ client.on("interactionCreate", async(interaction) => {
       // Get the member to timeout
       const member = interaction.options.getMember('user');
 
+      // Get the reason for the timeout
+     const reason = interaction.options.getString('reason');
+     
       // Check if the bot can timeout the member
       if (!member.moderatable) {
           await interaction.reply('The bot cannot timeout this user.');
