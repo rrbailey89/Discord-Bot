@@ -3,7 +3,8 @@ import {
   Client,
   EmbedBuilder,
   AuditLogEvent
-} from "discord.js";
+}
+from "discord.js";
 
 // Import the configuration from a seperate file
 import config from './config.js';
@@ -26,19 +27,19 @@ client.rest.on("rateLimited", (rateLimitedInfo) => {
 // Listen for interactionCreate events
 client.on("interactionCreate", async(interaction) => {
   if (!interaction.isCommand()) {
-    // If the interaction is not a command, log it and return
+      // If the interaction is not a command, log it and return
       console.log(`Interaction received: not a command`);
       return;
   }
 
   if (interaction.commandName === "grantrole") {
-        // If the command is grantrole, log it, get the role and user options and run the grantrole function
+      // If the command is grantrole, log it, get the role and user options and run the grantrole function
       console.log(`Interaction received: grantrole command`);
       const roleOption = interaction.options.get("role");
       const userOption = interaction.options.get("user");
       const roleID = roleOption.value;
       const userID = userOption.value;
-      
+
       // Get the guild, member, and role objects from the interaction
       const guild = interaction.guild;
       const member = await guild.members.fetch(userID);
@@ -113,12 +114,9 @@ client.on("interactionCreate", async(interaction) => {
       setTimeout(() => {
           reply.delete();
       }, 5000);
-  } else {
-      console.log(
-`Interaction received: unknown command ${interaction.commandName}`);
-  }
-  if (interaction.commandName === "poll") {
-    // Get the question and options from the user's input
+
+  } else if (interaction.commandName === "poll") {
+      // Get the question and options from the user's input
       const question = interaction.options.getString("question");
       const options = [];
       for (let i = 1; i <= 10; i++) {
@@ -168,7 +166,7 @@ client.on("interactionCreate", async(interaction) => {
       // If a duration was specified, set a timeout to end the poll
       const duration = interaction.options.getInteger("duration");
       if (duration) {
-        // Calculate the duration in seconds, limiting it to a maximum of 30 minutes
+          // Calculate the duration in seconds, limiting it to a maximum of 30 minutes
           const durationInSeconds = Math.min(duration * 60, 30 * 60);
           // Initialize the poll results with zero votes for each option
           const results = options.map((option) => ({
@@ -178,14 +176,14 @@ client.on("interactionCreate", async(interaction) => {
                   }));
           // Set a timeout to execute after the specified duration has elapsed
           setTimeout(async() => {
-            // Retrieve the updated message to get the latest reaction counts
+              // Retrieve the updated message to get the latest reaction counts
               const updatedMessage = await interaction.channel.messages.fetch(
                       pollMessage.id);
-                // Retrieve the reactions on the poll message
+              // Retrieve the reactions on the poll message
               const reactions = updatedMessage.reactions.cache;
 
               let totalVotes = 0;
-                // Iterate over each reaction to update the poll results
+              // Iterate over each reaction to update the poll results
               for (const reaction of reactions.values()) {
                   const emjoiIndex = emojis.indexOf(reaction.emoji.name);
                   if (emjoiIndex >= 0) {
@@ -195,9 +193,10 @@ client.on("interactionCreate", async(interaction) => {
                       } = results[emjoiIndex];
                       const reactionUsers = await reaction.users.fetch();
                       reactionUsers.forEach((user) => {
-                        if (user.bot) return; // skip bots vote
-                        // Get the member object for the user and add their name to the list of voters  
-                        const member = interaction.guild.members.cache.get(user.id);
+                          if (user.bot)
+                              return; // skip bots vote
+                          // Get the member object for the user and add their name to the list of voters
+                          const member = interaction.guild.members.cache.get(user.id);
                           const voterName = member.nickname || user.username;
                           if (!voters.includes(voterName)) {
                               voters.push(voterName);
@@ -217,12 +216,12 @@ client.on("interactionCreate", async(interaction) => {
                           count,
                           voters
                       }) => {
-                        if (count > 0) {
+                      if (count > 0) {
                           return `${option}: ${count} votes (${voters.join(", ")})`;
-                        } else {
+                      } else {
                           return `${option}: ${count} votes`;
-                        }
-                        })
+                      }
+                  })
                   .join("\n\n");
               // Create an embed to display the poll results
               const updatedEmbed = new EmbedBuilder()
@@ -237,117 +236,152 @@ client.on("interactionCreate", async(interaction) => {
                   content: `Poll has ended:`,
                   embeds: [updatedEmbed],
               });
-             // Set a timeout to end the poll after the specified duration has elapsed 
+              // Set a timeout to end the poll after the specified duration has elapsed
           }, durationInSeconds * 1000);
       }
+
+  } else if (interaction.commandName === 'kick') {
+      // Check if the user has permission to kick members
+      if (!interaction.member.permissions.has('KICK_MEMBERS')) {
+          await interaction.reply('You do not have permission to kick members.');
+          return;
+      }
+
+      // Get the member to kick
+      const member = interaction.options.getMember('member');
+
+      // Check if the bot can kick the member
+      if (!member.kickable) {
+          await interaction.reply('The bot cannot kick this user.');
+          return;
+      }
+
+      // Get the reason for kicking the member
+      const reason = interaction.options.getString('reason');
+
+      try {
+          // Kick the member
+          await member.kick(reason);
+
+          // Log the kick in the server's audit log
+          const logEmbed = new EmbedBuilder()
+              .setTitle(`Member Kicked: ${member.displayName}`)
+              .addFields({
+                  name: 'Member',
+                  value: `${member.toString()}`,
+                  inline: true
+              }, {
+                  name: 'Moderator',
+                  value: `${interaction.user.toString()}`,
+                  inline: true
+              }, {
+                  name: 'Reason',
+                  value: `${reason}`,
+                  inline: true
+              }, )
+              .setColor('#ff0000')
+              .setTimestamp();
+
+          const auditlog = await interaction.guild.fetchAuditLogs({
+              type: 20,
+              limit: 1
+          });
+
+          const auditLogEntry = auditlog.entries.first();
+          if (auditLogEntry) {
+              logEmbed.setFooter({
+                  text: `Kicked by ${auditLogEntry.executor.tag}`,
+                  iconURL: auditLogEntry.executor.avatarURL({
+                      dynamic: true
+                  })
+              });
+          }
+
+          const logChannel = interaction.guild.channels.cache.find(channel => channel.name === 'audit-log');
+          if (logChannel) {
+              await logChannel.send({
+                  embeds: [logEmbed]
+              });
+          }
+
+          await interaction.reply(`${member.user.tag} has been kicked.`);
+      } catch (error) {
+          console.error(error);
+          await interaction.reply('There was an error trying to kick the member.');
+      }
+
+  } else if (interaction.commandName === 'timeout') {
+      // Check if the user has permission to kick members
+      if (!interaction.member.permissions.has('MODERATE_MEMBERS')) {
+          await interaction.reply('You do not have permission to moderate members.');
+          return;
+      }
+
+      // Get the member to timeout
+      const member = interaction.options.getMember('member');
+
+      // Check if the bot can timeout the member
+      if (!member.manageable) {
+          await interaction.reply('The bot cannot timeout this user.');
+          return;
+      }
+
+      // Get the duration of the timeout
+      const duration = interaction.options.getInteger('duration');
+
+      try {
+          // Timeout the member
+          await member.timeout({
+              reason: "Timeout Command",
+              time: duration
+          });
+
+          // Log the timeout in the server's audit log
+          const timeoutEmbed = new EmbedBuilder()
+              .setTitle(`Member Timed Out: ${member.displayName}`)
+              .addFields({
+                  name: 'Member',
+                  value: `${member.toString()}`,
+                  inline: true
+              }, {
+                  name: 'Moderator',
+                  value: `${interaction.user.toString()}`,
+                  inline: true
+              }, {
+                  name: 'Duration',
+                  value: `${duration} seconds`,
+                  inline: true
+              }, )
+              .setColor('#ff0000')
+              .setTimestamp();
+
+          const timeoutauditlog = await interaction.guild.fetchAuditLogs({
+              type: 24,
+              limit: 1,
+          });
+          const timeoutauditLogEntry = timeoutauditlog.entries.first();
+          if (timeoutauditLogEntry) {
+              timeoutEmbed.setFooter({
+                  text: `Timed out by ${timeoutauditLogEntry.executor.tag}`,
+                  iconURL: timeoutauditLogEntry.executor.avatarURL({
+                      dynamic: true
+                  })
+              });
+          }
+          const logChannel = interaction.guild.channels.cache.find(channel => channel.name === 'audit-log');
+          if (logChannel) {
+              await logChannel.send({
+                  embeds: [timeoutEmbed]
+              });
+          }
+          await interaction.reply(`${member.user.tag} has been timed out`);
+      } catch (error) {
+          console.error(error);
+          await interaction.reply('There was an error trying to timeout the member.');
+      }
+
   }
-if (interaction.commandName === 'kick') {
-  // Check if the user has permission to kick members
-  if (!interaction.member.permissions.has('KICK_MEMBERS')) {
-    await interaction.reply('You do not have permission to kick members.');
-    return;
-  }
-}
-// Get the member to kick
-const member = interaction.options.getMember('member');
-
-// Check if the bot can kick the member
-if (!member.kickable) {
-  await interaction.reply('The bot cannot kick this user.');
-  return;
-}
-
-// Get the reason for kicking the member
-const reason = interaction.options.getString('reason');
-
-try {
-  // Kick the member
-  await member.kick(reason);
-
-  // Log the kick in the server's audit log
-  const logEmbed = new EmbedBuilder()
-    .setTitle(`Member Kicked: ${member.displayName}`)
-    .addFields(
-        { name: 'Member', value: `${member.toString()}`, inline: true },
-        { name: 'Moderator', value: `${interaction.user.toString()}`, inline: true },
-        { name: 'Reason', value: `${reason}`, inline: true },)
-    .setColor('#ff0000')
-    .setTimestamp();
-
-    const auditlog = await interaction.guild.fetchAuditLogs({
-      type: 20,
-      limit: 1
-    });
-  const auditLogEntry = auditlog.entries.first();
-  if (auditLogEntry) {
-    logEmbed.setFooter({ text: `Kicked by ${auditLogEntry.executor.tag}`, iconURL: auditLogEntry.executor.avatarURL({ dynamic: true }) });
-  }
-  const logChannel = interaction.guild.channels.cache.find(channel => channel.name === 'audit-log');
-  if (logChannel) {
-    await logChannel.send({ embeds: [logEmbed] });
-  }
-
-  await interaction.reply(`${member.user.tag} has been kicked.`);
-} catch (error) {
-  console.error(error);
-  await interaction.reply('There was an error trying to kick the member.');
-
-}
-
-if (interaction.commandName === 'timeout') {
-  // Check if the user has permission to kick members
-  if (!interaction.member.permissions.has('MODERATE_MEMBERS')) {
-    await interaction.reply('You do not have permission to moderate members.');
-    return;
-  }
-
-  // Get the member to timeout
-const member = interaction.options.getMember('member');
-
-// Check if the bot can timeout the member
-if (!member.manageable) {
-  await interaction.reply('The bot cannot timeout this user.');
-  return;
-}
-
-// Get the duration of the timeout
-const duration = interaction.options.getInteger('duration');
-
-try {
-  // Timeout the member
-  await member.timeout({ reason: "Timeout Command", time: duration });
-
-  // Log the timeout in the server's audit log
-  const timeoutEmbed = new EmbedBuilder()
-    .setTitle(`Member Timed Out: ${member.displayName}`)
-    .addFields(
-        { name: 'Member', value: `${member.toString()}`, inline: true },
-        { name: 'Moderator', value: `${interaction.user.toString()}`, inline: true },
-        { name: 'Duration', value: `${duration} seconds`, inline: true },)
-    .setColor('#ff0000')
-    .setTimestamp();
-
-    const timeoutauditlog = await interaction.guild.fetchAuditLogs({
-      type: 24,
-      limit: 1,
-    });
-    const timeoutauditLogEntry = timeoutauditlog.entries.first();
-    if (timeoutauditLogEntry) {
-      timeoutEmbed.setFooter({ text: `Timed out by ${timeoutauditLogEntry.executor.tag}`, iconURL: timeoutauditLogEntry.executor.avatarURL({ dynamic: true }) });  
-    }
-    const logChannel = interaction.guild.channels.cache.find(channel => channel.name === 'audit-log');
-    if (logChannel) {
-      await logChannel.send({ embeds: [timeoutEmbed] });
-    }
-    await interaction.reply(`${member.user.tag} has been timed out`);
-  } catch (error) {
-    console.error(error);
-    await interaction.reply('There was an error trying to timeout the member.');
-  }
-
-  }
-}
-);
+});
 
 client.login(config.token);
 console.log(`Starting bot...`);
