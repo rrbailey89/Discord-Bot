@@ -325,7 +325,33 @@ export default [
         "name": "duration",
         "description": "The duration of the timeout in minutes",
         "type": 4,
-        "required": true
+        "required": true,
+        "Choices": [
+          {
+            "name": "60 seconds",
+            "value": "60"
+          },
+          {
+            "name": "5 minutes",
+            "value": "300"
+          },
+          {
+            "name": "10 minutes",
+            "value": "600"
+          },
+          {
+            "name": "1 hour",
+            "value": "3600"
+          },
+          {
+            "name": "1 day",
+            "value": "86400"
+          },
+          {
+            "name": "1 week",
+            "value": "604800"
+          }
+        ]
       },
       {
         "name": "reason",
