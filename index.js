@@ -318,7 +318,7 @@ client.on("interactionCreate", async(interaction) => {
       }
 
       // Get the member to timeout
-      const member = interaction.options.getMember('member');
+      const member = interaction.options.getMember('user');
 
       // Check if the bot can timeout the member
       if (!member.moderatable) {
