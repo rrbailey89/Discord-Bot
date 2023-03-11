@@ -329,27 +329,27 @@ export default [
         "choices": [
           {
             "name": "60 seconds",
-            "value": "60"
+            "value": "1"
           },
           {
             "name": "5 minutes",
-            "value": "300"
+            "value": "5"
           },
           {
             "name": "10 minutes",
-            "value": "600"
+            "value": "10"
           },
           {
             "name": "1 hour",
-            "value": "3600"
+            "value": "60"
           },
           {
             "name": "1 day",
-            "value": "86400"
+            "value": "1440"
           },
           {
             "name": "1 week",
-            "value": "604800"
+            "value": "10080"
           }
         ]
       },
