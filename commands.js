@@ -326,7 +326,7 @@ export default [
         "description": "The duration of the timeout in minutes",
         "type": 4,
         "required": true,
-        "Choices": [
+        "choices": [
           {
             "name": "60 seconds",
             "value": "60"
