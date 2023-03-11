@@ -326,14 +326,17 @@ client.on("interactionCreate", async(interaction) => {
           return;
       }
 
-      // Get the duration of the timeout
-      const duration = parseInt(interaction.options.getInteger('duration'));
+      // Get the duration of the timeout in minutes
+      const durationInMinutes = parseInt(interaction.options.getInteger('duration'));
+
+      // Convert the duration to milliseconds
+      const durationInMilliseconds = durationInMinutes * 60 * 1000;
 
       try {
           // Timeout the member
           await member.timeout({
               reason: "Timeout Command",
-              time: duration
+              time: durationInMilliseconds
           });
 
           // Log the timeout in the server's audit log
