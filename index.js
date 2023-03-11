@@ -311,31 +311,30 @@ client.on("interactionCreate", async(interaction) => {
       }
 
   } else if (interaction.commandName === 'timeout') {
-      // Check if the user has permission to kick members
+      // Check if the user has permission to moderate members
       if (!interaction.member.permissions.has('MODERATE_MEMBERS')) {
           await interaction.reply('You do not have permission to moderate members.');
           return;
       }
 
+      // Get the duration of the timeout in minutes
+    const durationInMinutes = parseInt(interaction.options.getInteger('duration'));
+
       // Get the member to timeout
-      const member = interaction.options.getMember('user');
+    const member = interaction.options.getMember('user');
 
       // Get the reason for the timeout
-     const reason = interaction.options.getString('reason');
-     
+    const reason = interaction.options.getString('reason');
+
       // Check if the bot can timeout the member
       if (!member.moderatable) {
           await interaction.reply('The bot cannot timeout this user.');
           return;
       }
 
-      // Get the duration of the timeout in minutes
-      const durationInMinutes = parseInt(interaction.options.getInteger('duration'));
-
       // Convert the duration to milliseconds
       const durationInMilliseconds = durationInMinutes * 60 * 1000;
       console.log(`durationInMilliseconds: ${durationInMilliseconds}`);
-      // Get the reason for the timeout
       
       try {
           // Timeout the member
