@@ -331,7 +331,7 @@ client.on("interactionCreate", async(interaction) => {
 
       // Convert the duration to milliseconds
       const durationInMilliseconds = durationInMinutes * 60 * 1000;
-
+      console.log(`durationInMilliseconds: ${durationInMilliseconds}`);
       try {
           // Timeout the member
           await member.timeout({
@@ -352,7 +352,7 @@ client.on("interactionCreate", async(interaction) => {
                   inline: true
               }, {
                   name: 'Duration',
-                  value: `${duration} seconds`,
+                  value: `${durationInMinutes} minutes`,
                   inline: true
               }, )
               .setColor('#ff0000')
