@@ -362,7 +362,7 @@ export default [
     ]
   },
   {
-    "name": "userinfo",
+    "name": "User Information",
     "type": 2,
   }
 ]
