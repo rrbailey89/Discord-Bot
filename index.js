@@ -411,7 +411,7 @@ client.on("interactionCreate", async(interaction) => {
             name: 'Roles',
             value: `${roles.map(role => role.toString()).join(", ")}`,
             inline: true
-        }, )
+        } )
         .setTimestamp();
       await interaction.reply({ embeds: [embed] });
     }
