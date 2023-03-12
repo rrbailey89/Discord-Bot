@@ -384,7 +384,7 @@ client.on("interactionCreate", async(interaction) => {
           await interaction.reply('There was an error trying to timeout the member.');
       }
   
-  } else if (interaction.isContextMenu()) {
+  } else if (interaction.isContextMenuCommand()) {
     if (interaction.commandName === "userinfo") {
       const member = interaction.targetMember;
       const embed = new EmbedBuilder()
