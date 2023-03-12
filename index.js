@@ -387,6 +387,7 @@ client.on("interactionCreate", async(interaction) => {
   } else if (interaction.isContextMenuCommand()) {
     if (interaction.commandName === "User Information") {
       const member = interaction.targetMember;
+      const roles = member.roles.cache.filter(role => role.name !== '@everyone');
       const embed = new EmbedBuilder()
         .setTitle(`User Info - ${member.displayName}`)
         .setImage(member.user.avatarURL({ dynamic: true, size: 4096 }))
@@ -408,7 +409,7 @@ client.on("interactionCreate", async(interaction) => {
             inline: true
          }, {
             name: 'Roles',
-            value: `${member.roles.cache.map(role => role.toString()).join(", ")}`,
+            value: `${roles.map(role => role.toString()).join(", ")}`,
             inline: true
         }, )
         .setTimestamp();
