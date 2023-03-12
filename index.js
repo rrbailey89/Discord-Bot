@@ -389,7 +389,7 @@ client.on("interactionCreate", async(interaction) => {
       const member = interaction.targetMember;
       const embed = new EmbedBuilder()
         .setTitle(`User Info - ${member.displayName}`)
-        .setImage(member.user.avatarURL({ dynamic: true }))
+        .setImage(member.user.avatarURL({ dynamic: true, size: 4096 }))
         .addFields({
             name: 'Discord Name',
             value: `${member.user.tag}`,
