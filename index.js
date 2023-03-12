@@ -383,9 +383,38 @@ client.on("interactionCreate", async(interaction) => {
           console.error(error);
           await interaction.reply('There was an error trying to timeout the member.');
       }
-
-  }
-});
+  
+  } else if (interaction.isContextMenu()) {
+    if (interaction.commandName === "userinfo") {
+      const member = interaction.targetMember;
+      const embed = new EmbedBuilder()
+        .setTitle(`User Info - ${member.displayName}`)
+        .setThumbnail(member.user.avatarURL())
+        .addFields({
+            name: 'User Tag',
+            value: `${member.user.tag}`,
+            inline: true
+        }, {
+            name: 'Nickname',
+            value: `${member.displayName}`,
+            inline: true
+        }, {
+            name: 'Joined Discord On',
+            value: `${member.user.createdAt.toLocaleString()}`,
+            inline: true       
+         }, {
+            name: 'Joined Server On',
+            value: `${member.joinedAt.toLocaleString()}`,
+            inline: true
+         }, {
+            name: 'Roles',
+            value: `${member.roles.cache.map(role => role.toString()).join(", ")}`,
+            inline: true
+        }, )
+        .setTimestamp();
+      await interaction.reply({ embeds: [embed] });
+    }
+}});
 
 client.login(config.token);
 console.log(`Starting bot...`);

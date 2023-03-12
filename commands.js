@@ -360,5 +360,9 @@ export default [
         "required": false
       }
     ]
+  },
+  {
+    "name": "userinfo",
+    "type": 2,
   }
 ]
