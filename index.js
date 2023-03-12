@@ -389,9 +389,9 @@ client.on("interactionCreate", async(interaction) => {
       const member = interaction.targetMember;
       const embed = new EmbedBuilder()
         .setTitle(`User Info - ${member.displayName}`)
-        .setThumbnail(member.user.avatarURL())
+        .setImage(member.user.avatarURL({ dynamic: true }))
         .addFields({
-            name: 'User Tag',
+            name: 'Discord Name',
             value: `${member.user.tag}`,
             inline: true
         }, {
@@ -399,7 +399,7 @@ client.on("interactionCreate", async(interaction) => {
             value: `${member.displayName}`,
             inline: true
         }, {
-            name: 'Joined Discord On',
+            name: 'Account Created On',
             value: `${member.user.createdAt.toLocaleString()}`,
             inline: true       
          }, {
