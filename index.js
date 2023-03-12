@@ -242,7 +242,7 @@ client.on("interactionCreate", async(interaction) => {
 
   } else if (interaction.commandName === 'kick') {
       // Check if the user has permission to kick members
-      if (!interaction.member.permissions.has('KICK_MEMBERS')) {
+      if (!interaction.member.permissions.has([PermissionsBitField.Flags.KickMembers])) {
           await interaction.reply('You do not have permission to kick members.');
           return;
       }
