@@ -1,4 +1,4 @@
-// Import Discord.js and constructors to create a client
+// Import the necessary packages and files
 import {
   Client,
   EmbedBuilder,
@@ -6,9 +6,8 @@ import {
   GatewayIntentBits 
 }
 from "discord.js";
-
-// Import the configuration from a seperate file
 import config from './config.js';
+import fs from "fs";
 
 // Create the client and set the intents (permissions)
 
