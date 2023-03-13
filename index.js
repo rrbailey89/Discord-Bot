@@ -437,7 +437,7 @@ client.on("guildMemberAdd", async (member) => {
         return {
             name: `Rule ${index + 1}`,
             value: rule,
-            inline: false,
+            inline: false
             }
         });
     try {
