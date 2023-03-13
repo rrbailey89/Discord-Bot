@@ -432,21 +432,14 @@ client.on("interactionCreate", async(interaction) => {
 client.on("guildMemberAdd", async (member) => {
     console.log(`New member joined: ${member.displayName} (${member.id})`);
     // Send a private message to the new member with the server rules and the agree button
-    const rules = JSON.parse(fs.readFileSync('./rules.json', 'utf8')).rules;
-    const fields = rules.map((rule, index) => {
-        return {
-            name: `Rule ${index + 1}`,
-            value: rule,
-            inline: false
-            }
-        });
+    const rules = fs.readFileSync('./rules.txt', 'utf8').split('\n');
     try {
         const user = await client.users.cache.get(member.id);
         await user.send({
             embeds: [new EmbedBuilder()
                 .setColor("#0099ff")
                 .setTitle("Server Rules")
-                .addFields(fields)
+                .setDescription(rules)
                 .setFooter({ text: `Click the "I Agree" button below to accept the rules and select a role.`
                  }),
               ],
@@ -463,10 +456,6 @@ client.on("guildMemberAdd", async (member) => {
                     ],
                 },
             ],
-        }).then(message => {
-            // Convert the components to JSON before sending the message
-            message.components = message.components.map(component => component.toJSON());
-            message.edit({ components: message.components });
         });
         console.log(`Sent welcome message to ${member.displayName} (${member.id})`);
     } catch (error) {
