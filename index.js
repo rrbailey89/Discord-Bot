@@ -11,7 +11,17 @@ import config from './config.js';
 
 // Create the client and set the intents (permissions)
 const client = new Client({
-  intents: 3276799
+  intents: [
+    GatewayInentBits.Guilds,
+    GatewayInentBits.GuildMessages,
+    GatewayInentBits.GuildMessageReactions,
+    GatewayInentBits.GuildMessageTyping,
+    GatewayInentBits.GuildVoiceStates,
+    GatewayInentBits.GuildMembers,
+    GatewayInentBits.GuildPresences,
+    GatewayInentBits.MessageContent,
+    GatewayInentBits.GuildMembers,
+  ],    
 });
 
 // When the bot is ready to start, log a message
