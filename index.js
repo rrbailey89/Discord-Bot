@@ -418,6 +418,7 @@ client.on("interactionCreate", async(interaction) => {
     }
 
 } else client.on ("guildMemberAdd", (member) => {
+    console.log(`New member joined: ${member.displayName} (${member.id})`);
     // Send a private message to the new member with the server rules and the agree button
     member.send({
         embeds: [new EmbedBuilder()
