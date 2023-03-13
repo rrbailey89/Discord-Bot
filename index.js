@@ -463,6 +463,10 @@ client.on("guildMemberAdd", async (member) => {
                     ],
                 },
             ],
+        }).then(message => {
+            // Convert the components to JSON before sending the message
+            message.components = message.components.map(component => component.toJSON());
+            message.edit({ components: message.components });
         });
         console.log(`Sent welcome message to ${member.displayName} (${member.id})`);
     } catch (error) {
