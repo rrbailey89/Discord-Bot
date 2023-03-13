@@ -3,7 +3,7 @@ import {
   Client,
   EmbedBuilder,
   PermissionsBitField,
-  GatewayInentBits 
+  GatewayIntentBits 
 }
 from "discord.js";
 
@@ -14,15 +14,15 @@ import config from './config.js';
 
 const client = new Client({
   intents: [
-    GatewayInentBits.Guilds,
-    GatewayInentBits.GuildMessages,
-    GatewayInentBits.GuildMessageReactions,
-    GatewayInentBits.GuildMessageTyping,
-    GatewayInentBits.GuildVoiceStates,
-    GatewayInentBits.GuildMembers,
-    GatewayInentBits.GuildPresences,
-    GatewayInentBits.MessageContent,
-    GatewayInentBits.GuildMembers,
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.GuildMessageReactions,
+    GatewayIntentBits.GuildMessageTyping,
+    GatewayIntentBits.GuildVoiceStates,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildPresences,
+    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildMembers,
   ],    
 });
 
