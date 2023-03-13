@@ -446,9 +446,10 @@ client.on("guildMemberAdd", async (member) => {
             embeds: [new EmbedBuilder()
                 .setColor("#0099ff")
                 .setTitle("Server Rules")
-                .setFooter(`Click the "I Agree" button below to accept the rules and select a role.`)
                 .addFields(fields)
-            ],
+                .setFooter({ text: `Click the "I Agree" button below to accept the rules and select a role.`
+                 }),
+              ],
             components: [
                 {
                     type: "ActionRow",
