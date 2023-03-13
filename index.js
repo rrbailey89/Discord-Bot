@@ -2,7 +2,8 @@
 import {
   Client,
   EmbedBuilder,
-  PermissionsBitField
+  PermissionsBitField,
+  GatewayInentBits 
 }
 from "discord.js";
 
@@ -10,6 +11,7 @@ from "discord.js";
 import config from './config.js';
 
 // Create the client and set the intents (permissions)
+
 const client = new Client({
   intents: [
     GatewayInentBits.Guilds,
