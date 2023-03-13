@@ -437,7 +437,7 @@ client.on("guildMemberAdd", async (member) => {
             embeds: [new EmbedBuilder()
                 .setColor('#0099ff')
                 .setTitle('Server Rules')
-                .setDescription(fs.readFileSync('./rules.txt', 'utf8'))
+                .setDescription(JSON.parse(fs.readFileSync('./rules.txt', 'utf8')))
                 .setFooter(`Click the "I Agree" button below to accept the rules and select a role.`),
             ],
             components: [
