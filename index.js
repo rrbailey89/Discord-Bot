@@ -417,7 +417,7 @@ client.on("interactionCreate", async(interaction) => {
       await interaction.reply({ embeds: [embed] });
     }
 
-client.on ("guildMemberAdd", (member) => {
+} else client.on ("guildMemberAdd", (member) => {
     // Send a private message to the new member with the server rules and the agree button
     member.send({
         embeds: [new EmbedBuilder()
@@ -473,7 +473,7 @@ client.on ("guildMemberAdd", (member) => {
             });
         }
     });
-}});
+});
 
 client.login(config.token);
 console.log(`Starting bot...`);
