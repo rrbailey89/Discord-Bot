@@ -416,6 +416,63 @@ client.on("interactionCreate", async(interaction) => {
         .setTimestamp();
       await interaction.reply({ embeds: [embed] });
     }
+
+client.on ("guildMemberAdd", (member) => {
+    // Send a private message to the new member with the server rules and the agree button
+    member.send({
+        embeds: [new EmbedBuilder()
+            .setColor('#0099ff')
+            .setTitle('Server Rules')
+            .setDescription(fs.readFileSync('./rules.txt', 'utf8'))
+            .setFooter(`Click the "I Agree" button below to accept the rules and select a role.`),
+        ],
+        components: [
+            {
+                type: "ActionRow",
+                components: [
+                    {
+                        type: "Button",
+                        customId: "agree",
+                        label: "I Agree",
+                        style: "PRIMARY"                     
+                    },
+                ],
+            },
+        ],
+    });
+    });
+    // Listen for button interactions
+    client.on("interactionCreate", async (interaction) => {
+        if (!interaction.isButton()) {
+            // If the interaction is not a button, return
+            return;
+        }
+        // If the user clicks the "I agree button, prompt them to select a role"
+        if (interaction.customId === "agree") {
+            await interaction.reply({
+                content: "Please select a role below.",
+                components: [
+                    {
+                        type: "ActionRow",
+                        components: [
+                            {
+                                type: "Button",
+                                customId: "raider",
+                                label: "Raider",
+                                style: "SUCCESS",
+                            },
+                            {
+                                type: "Button",
+                                customId: "sub",
+                                label: "Sub",
+                                style: "SECONDARY",
+                            },
+                        ],
+                    },
+                ],
+            });
+        }
+    });
 }});
 
 client.login(config.token);
