@@ -416,7 +416,7 @@ client.on("interactionCreate", async(interaction) => {
         .setTimestamp();
       await interaction.reply({ embeds: [embed] });
 
-  } else if (interaction.commandName === 'rules')
+  } else if (interaction.commandName === 'rules') {
         if (interaction.options.getSubcommand() === 'add') {
             // Check if the user has permission to add rules
             if (!interaction.member.permissions.has([PermissionsBitField.Flags.ModerateMembers, PermissionsBitField.Flags.Administrator])) {
@@ -493,7 +493,7 @@ client.on("interactionCreate", async(interaction) => {
         }
     }
     }
-        });
+        }});
 
 client.login(config.token);
 console.log(`Starting bot...`);
