@@ -482,6 +482,10 @@ client.on("interactionCreate", async(interaction) => {
               const newEmbed = new EmbedBuilder(previousEmbed)
                 .setFooter({ text: buttonText });
           
+              try {
+                // Update the previous message with the updated embed
+                await previousMessage.edit({ embeds: [newEmbed] });
+          
               // Reply to the user with the ephemeral message
               const ephemeralMessage = new EmbedBuilder()
                 .setDescription('Click the button below to assign yourself a role.')
@@ -500,20 +504,15 @@ client.on("interactionCreate", async(interaction) => {
                     .setStyle(ButtonStyle.Success)
                 );
           
-                try {
-                    // Update the previous message with the updated embed
-                    await previousMessage.edit({ embeds: [newEmbed], components: [] });
-              
-                    // Reply to the user with the ephemeral message and role buttons
-                    await interaction.reply({ ephemeral: true, embeds: [ephemeralMessage], components: [row] });
-                  } catch (error) {
-                    console.error(error);
-                    await interaction.reply('There was an error trying to add the button.');
-                  }
-                } else {
-                  await interaction.reply('There was an error trying to add the button.');
-                }
-              }
+            await interaction.reply({ ephemeral: true, embeds: [ephemeralMessage], components: [row] });
+            } catch (error) {
+              console.error(error);
+              await interaction.reply('There was an error trying to add the button.');
+            }
+          } else {
+            await interaction.reply('There was an error trying to add the button.');
+          }
+        }
           
     }    
 
