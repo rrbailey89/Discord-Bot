@@ -383,7 +383,7 @@ client.on("interactionCreate", async(interaction) => {
           console.error(error);
           await interaction.reply('There was an error trying to timeout the member.');
       }
-      
+
     } else if (interaction.commandName === 'rules') {
         if (interaction.options.getSubcommand() === 'add') {
             // Check if the user has permission to add rules
@@ -461,7 +461,6 @@ client.on("interactionCreate", async(interaction) => {
             }
         }
     }
-});
 
 if (interaction.isContextMenuCommand()) {
     if (interaction.commandName === "User Information") {
@@ -496,7 +495,8 @@ if (interaction.isContextMenuCommand()) {
       await interaction.reply({ embeds: [embed] });
 
 
-    }};
+
+}}});
 
 client.login(config.token);
 console.log(`Starting bot...`);
