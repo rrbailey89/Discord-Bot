@@ -407,7 +407,26 @@ export default [
             "required": true
           }
         ]
-      }
+      },
+      {
+        "name": "button",
+        "description": "Add a button to the last message sent by the bot in the specified channel.",
+        "type": 1,
+        "options": [
+          {
+            "name": "button-text",
+            "description": "The text to display on the button.",
+            "type": 3,
+            "required": true
+          },
+          {
+            "name": "channel",
+            "description": "The channel to add the button to.",
+            "type": 7,
+            "required": true
+          }
+        ]
+      },
     ]
   },
 ]
