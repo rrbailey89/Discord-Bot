@@ -364,5 +364,50 @@ export default [
   {
     "name": "User Information",
     "type": 2,
-  }
+  },
+  {
+    "name": "rules",
+    "description": "Add or display server rules.",
+    "options": [
+      {
+        "name": "add",
+        "description": "Add a new server rule.",
+        "type": 1,
+        "options": [
+          {
+            "name": "rule",
+            "description": "The rule to add.",
+            "type": 3,
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "populate",
+        "description": "Populate the specified channel with the server rules.",
+        "type": 1,
+        "options": [
+          {
+            "name": "channel",
+            "description": "The channel to populate with the server rules.",
+            "type": 7,
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "repopulate",
+        "description": "Update the specified channel with the server rules.",
+        "type": 1,
+        "options": [
+          {
+            "name": "channel",
+            "description": "The channel to update with the server rules.",
+            "type": 7,
+            "required": true
+          }
+        ]
+      }
+    ]
+  },
 ]

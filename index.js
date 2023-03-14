@@ -87,21 +87,10 @@ client.on("interactionCreate", async(interaction) => {
       const is_mine = interaction.options.getBoolean("is_mine");
       const channel = interaction.options.getChannel("channel");
 
-      console.log(`month: ${month}`);
-      console.log(`day: ${day}`);
-      console.log(`year: ${year}`);
-      console.log(`time: ${time}`);
-      console.log(`timezone: ${timezone}`);
-      console.log(`raidName: ${raid}`);
-      console.log(`channel: ${channel}`);
-      console.log(`is_mine: ${is_mine}`);
-
       // Calculate Unix timestamp from inputs
       const formattedTime = `${time}:00 ${timezone}`;
       const dateString = `${day} ${month} ${year} ${formattedTime}`;
       const timestamp = Math.floor(Date.parse(dateString) / 1000);
-
-      console.log(`timestamp: ${timestamp}`);
 
       // Append "M.I.N.E." to raid name if isMine is true
       const formattedRaid = is_mine ? `${raid} M.I.N.E.` : raid;
@@ -426,75 +415,84 @@ client.on("interactionCreate", async(interaction) => {
         } )
         .setTimestamp();
       await interaction.reply({ embeds: [embed] });
-    }
-}});
 
-client.on("guildMemberAdd", async (member) => {
-    console.log(`New member joined: ${member.displayName} (${member.id})`);
-    // Send a private message to the new member with the server rules and the agree button
-    const rules = fs.readFileSync('./rules.txt', 'utf8').split('\n');
-    try {
-        const user = await client.users.cache.get(member.id);
-        await user.send({
-            embeds: [new EmbedBuilder()
-                .setColor("#0099ff")
-                .setTitle("Server Rules")
-                .setDescription(rules)
-                .setFooter({ text: `Click the "I Agree" button below to accept the rules and select a role.`
-                 }),
-              ],
-            components: [
-                {
-                    type: "ActionRow",
-                    components: [
-                        {
-                            type: "Button",
-                            customId: "agree",
-                            label: "I Agree",
-                            style: "PRIMARY"
-                        },
-                    ],
-                },
-            ],
-        });
-        console.log(`Sent welcome message to ${member.displayName} (${member.id})`);
-    } catch (error) {
-        console.error(`Error sending welcome message to ${member.displayName} (${member.id}): ${error}`);
-    }
-});
+  } else if (interaction.commandName === 'rules')
+        if (interaction.options.getSubcommand() === 'add') {
+            // Check if the user has permission to add rules
+            if (!interaction.member.permissions.has([PermissionsBitField.Flags.ModerateMembers, PermissionsBitField.Flags.Administrator])) {
+                await interaction.reply('You do not have permission to add rules.');
+                return;
+            }
 
-// Listen for button interactions
-client.on("interactionCreate", async (interaction) => {
-    if (!interaction.isButton()) {
-        // If the interaction is not a button, return
-        return;
+            // Get the rule to add
+            const rule = interaction.options.getString('rule');
+
+            try {
+                // Add the rule to the file
+                fs.appendFileSync('./rules.txt', `${rule}\n`);
+                await interaction.reply(`Rule added: ${rule}`);
+            } catch (error) {
+                console.error(error);
+                await interaction.reply('There was an error trying to add the rule.');
+            }
+        } else if (interaction.options.getSubcommand() === 'populate') {
+            // Check if the user has permission to add rules
+            if (!interaction.member.permissions.has([PermissionsBitField.Flags.ModerateMembers, PermissionsBitField.Flags.Administrator])) {
+                await interaction.reply('You do not have permission to use the rules commands.');
+                return;
+            }
+
+            // Get the channel to send the rules message to
+            const channel = interaction.options.getChannel('channel');
+
+            // Get the rules from the file
+            const rules = fs.readFileSync('./rules.txt', 'utf8').split('\n');
+
+            // Create the rules embed
+            const rulesEmbed = new EmbedBuilder()
+                .setTitle('Server Rules')
+                .setColor('#0099ff')
+                .setDescription(rules.join('\n'));
+
+            // Send the rules embed to the channel
+            await channel.send({ embeds: [rulesEmbed] });
+
+            await interaction.reply(`Rules populated in ${channel.toString()}`);
+        } else if (interaction.options.getSubcommand() === 'repopulate') {
+            // Check if the user has permission to send messages
+            if (!interaction.member.permissions.has([PermissionsBitField.Flags.ModerateMembers, PermissionsBitField.Flags.Administrator])) {
+                await interaction.reply('You do not have permission to use the rules commands.');
+                return;
+            }
+
+            // Get the channel to repopulate the rules message in
+            const channel = interaction.options.getChannel('channel');
+
+            // Find the previous rules message sent by the bot in the specified channel
+            const messages = await channel.fetchMessages({ limit: 100 });
+            const botMessages = messages.filter(m => m.author.id === client.user.id && m.embeds.length > 0 && m.embeds[0].title === 'Server Rules');
+            const previousMessage = botMessages.first();
+
+            // Get the updated rules from the file
+            const rules = fs.readFileSync('./rules.txt', 'utf8').split('\n');
+
+            // Create an embed with the updated rules
+            const rulesEmbed = new EmbedBuilder()
+                .setTitle('Server Rules')
+                .setColor('#0099ff')
+                .setDescription(rules.join('\n'));
+
+        try {
+            // Update the previous rules message with the updated rules
+            await previousMessage.edit({ embeds: [rulesEmbed] });
+        
+            await interaction.reply(`Rules repopulated in ${channel.toString()}`);
+        } catch (error) {
+            console.error(error);
+            await interaction.reply('There was an error trying to repopulate the rules.');
+        }
     }
-    // If the user clicks the "I agree button, prompt them to select a role"
-    if (interaction.customId === "agree") {
-        await interaction.reply({
-            content: "Please select a role below.",
-            components: [
-                {
-                    type: "ActionRow",
-                    components: [
-                        {
-                            type: "Button",
-                            customId: "raider",
-                            label: "Raider",
-                            style: "SUCCESS",
-                        },
-                        {
-                            type: "Button",
-                            customId: "sub",
-                            label: "Sub",
-                            style: "SECONDARY",
-                        },
-                    ],
-                },
-            ],
-        });
-    }
-});
+        }});
 
 client.login(config.token);
 console.log(`Starting bot...`);
