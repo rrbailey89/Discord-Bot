@@ -475,19 +475,21 @@ client.on("interactionCreate", async(interaction) => {
           
             // Check if the previous message is an embed
             if (previousMessage && previousMessage.embeds.length > 0) {
-              // Get the fields from the previous embed
-              const previousEmbed = previousMessage.embeds[0]
-
-              // Add the button to the footer of the embed
-              previousEmbed.setFooter({ text: buttonText });
+              // Get the embed from the previous message
+              const previousEmbed = previousMessage.embeds[0];
           
-              // Create the new embed with the updated fields and the button
-              const newEmbed = new EmbedBuilder()
-                .setTitle('Assign Roles')
-                .setDescription('Click the button below to assign yourself a role.')
+              // Create a new EmbedBuilder instance based on the previous embed
+              const newEmbed = new EmbedBuilder(previousEmbed)
+                .setFooter({ text: buttonText });
+          
+              // Update the previous message with the updated embed
+              await previousMessage.edit({ embeds: [newEmbed] });
+          
+              // Reply to the user with the ephemeral message
+              const ephemeralMessage = new EmbedBuilder()
+                .setDescription('Button added successfully.')
                 .setColor('#0099ff')
-                .setTimestamp()
-                .setFooter({ text: buttonText})
+                .setTimestamp();
           
               const row = new ActionRowBuilder()
                 .addComponents(
