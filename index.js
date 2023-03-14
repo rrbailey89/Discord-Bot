@@ -383,39 +383,7 @@ client.on("interactionCreate", async(interaction) => {
           console.error(error);
           await interaction.reply('There was an error trying to timeout the member.');
       }
-  
-  } else if (interaction.isContextMenuCommand()) {
-    if (interaction.commandName === "User Information") {
-      const member = interaction.targetMember;
-      const roles = member.roles.cache.filter(role => role.name !== '@everyone');
-      const rolesValue = roles.size ? roles.map(role => role.toString()).join(" ") : 'No Roles Assigned';
-      const embed = new EmbedBuilder()
-        .setTitle(`User Info - ${member.displayName}`)
-        .setImage(member.user.avatarURL({ dynamic: true, size: 4096 }))
-        .addFields({
-            name: 'Discord Name',
-            value: `${member.user.tag}`,
-            inline: true
-        }, {
-            name: 'Nickname',
-            value: `${member.displayName}`,
-            inline: true
-        }, {
-            name: 'Account Created On',
-            value: `${member.user.createdAt.toLocaleString()}`,
-            inline: true       
-         }, {
-            name: 'Joined Server On',
-            value: `${member.joinedAt.toLocaleString()}`,
-            inline: true
-         }, {
-            name: 'Roles',
-            value: `${rolesValue}`,
-            inline: true
-        } )
-        .setTimestamp();
-      await interaction.reply({ embeds: [embed] });
-
+      
     } else if (interaction.commandName === 'rules') {
         if (interaction.options.getSubcommand() === 'add') {
             // Check if the user has permission to add rules
@@ -493,7 +461,42 @@ client.on("interactionCreate", async(interaction) => {
             }
         }
     }
-    }});
+});
+
+if (interaction.isContextMenuCommand()) {
+    if (interaction.commandName === "User Information") {
+      const member = interaction.targetMember;
+      const roles = member.roles.cache.filter(role => role.name !== '@everyone');
+      const rolesValue = roles.size ? roles.map(role => role.toString()).join(" ") : 'No Roles Assigned';
+      const embed = new EmbedBuilder()
+        .setTitle(`User Info - ${member.displayName}`)
+        .setImage(member.user.avatarURL({ dynamic: true, size: 4096 }))
+        .addFields({
+            name: 'Discord Name',
+            value: `${member.user.tag}`,
+            inline: true
+        }, {
+            name: 'Nickname',
+            value: `${member.displayName}`,
+            inline: true
+        }, {
+            name: 'Account Created On',
+            value: `${member.user.createdAt.toLocaleString()}`,
+            inline: true       
+         }, {
+            name: 'Joined Server On',
+            value: `${member.joinedAt.toLocaleString()}`,
+            inline: true
+         }, {
+            name: 'Roles',
+            value: `${rolesValue}`,
+            inline: true
+        } )
+        .setTimestamp();
+      await interaction.reply({ embeds: [embed] });
+
+
+    }};
 
 client.login(config.token);
 console.log(`Starting bot...`);
