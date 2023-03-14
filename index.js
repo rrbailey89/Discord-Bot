@@ -464,23 +464,23 @@ client.on("interactionCreate", async(interaction) => {
             // Get the button text and channel from the options
             const buttonText = interaction.options.getString('button-text');
             const channel = interaction.options.getChannel('channel');
-
+        
             // Find the last message sent by the bot in the specified channel
             const messages = await channel.messages.fetch({ limit: 100 });
             const botMessages = messages.filter(m => m.author.id === client.user.id);
             const previousMessage = botMessages.first();
-
+        
             // Check if the previous message is an embed
             if (previousMessage && previousMessage.embeds.length > 0) {
                 // Get the embed from the previous message
                 const previousEmbed = previousMessage.embeds[0];
-
+        
                 // Add the button to the embed
                 previousEmbed.setFooter({ text: buttonText });
-
+        
                 // Update the previous message with the updated embed
                 await previousMessage.edit({ embeds: [previousEmbed] });
-
+        
                 // Reply to the user with the ephemeral message
                 const ephemeralMessage = new EmbedBuilder()
                     .setTitle('Assign Roles')
@@ -488,7 +488,7 @@ client.on("interactionCreate", async(interaction) => {
                     .setColor('#0099ff')
                     .setTimestamp()
                     .setFooter({ text: buttonText });
-
+        
                 const row = new MessageActionRow()
                     .addComponents(
                         new MessageButton()
