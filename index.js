@@ -494,8 +494,6 @@ if (interaction.isContextMenuCommand()) {
         .setTimestamp();
       await interaction.reply({ embeds: [embed] });
 
-
-
 }}});
 
 client.login(config.token);
