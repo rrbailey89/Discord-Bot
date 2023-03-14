@@ -476,7 +476,12 @@ client.on("interactionCreate", async(interaction) => {
                 const previousEmbed = previousMessage.embeds[0];
         
                 // Add the button to the embed
-                previousEmbed.setFooter({ text: buttonText });
+                const newField = {
+                    name: 'Assign Roles',
+                    value: buttonText,
+                    inline: true
+                };
+                previousEmbed.addFields(newField)
         
                 // Update the previous message with the updated embed
                 await previousMessage.edit({ embeds: [previousEmbed] });
@@ -487,7 +492,6 @@ client.on("interactionCreate", async(interaction) => {
                     .setDescription('Click the button below to assign yourself a role.')
                     .setColor('#0099ff')
                     .setTimestamp()
-                    .setFooter({ text: buttonText });
         
                 const row = new MessageActionRow()
                     .addComponents(
