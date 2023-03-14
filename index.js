@@ -482,12 +482,9 @@ client.on("interactionCreate", async(interaction) => {
               const newEmbed = new EmbedBuilder(previousEmbed)
                 .setFooter({ text: buttonText });
           
-              // Update the previous message with the updated embed
-              await previousMessage.edit({ embeds: [newEmbed] });
-          
               // Reply to the user with the ephemeral message
               const ephemeralMessage = new EmbedBuilder()
-                .setDescription('Button added successfully.')
+                .setDescription('Click the button below to assign yourself a role.')
                 .setColor('#0099ff')
                 .setTimestamp();
           
@@ -503,25 +500,20 @@ client.on("interactionCreate", async(interaction) => {
                     .setStyle(ButtonStyle.Success)
                 );
           
-              try {
-                // Update the previous message with the updated embed
-                await previousMessage.edit({ embeds: [newEmbed], components: [row] });
-          
-                // Reply to the user with the ephemeral message
-                const ephemeralMessage = new EmbedBuilder()
-                  .setDescription('Button added successfully.')
-                  .setColor('#0099ff')
-                  .setTimestamp();
-          
-                await interaction.reply({ ephemeral: true, embeds: [ephemeralMessage] });
-              } catch (error) {
-                console.error(error);
-                await interaction.reply('There was an error trying to add the button.');
+                try {
+                    // Update the previous message with the updated embed
+                    await previousMessage.edit({ embeds: [newEmbed], components: [] });
+              
+                    // Reply to the user with the ephemeral message and role buttons
+                    await interaction.reply({ ephemeral: true, embeds: [ephemeralMessage], components: [row] });
+                  } catch (error) {
+                    console.error(error);
+                    await interaction.reply('There was an error trying to add the button.');
+                  }
+                } else {
+                  await interaction.reply('There was an error trying to add the button.');
+                }
               }
-            } else {
-              await interaction.reply('There was an error trying to add the button.');
-            }
-          }
           
     }    
 
