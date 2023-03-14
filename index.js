@@ -476,7 +476,10 @@ client.on("interactionCreate", async(interaction) => {
             // Check if the previous message is an embed
             if (previousMessage && previousMessage.embeds.length > 0) {
               // Get the fields from the previous embed
-              const previousFields = previousMessage.embeds[0].fields;
+              const previousEmbed = previousMessage.embeds[0]
+
+              // Add the button to the footer of the embed
+              previousEmbed.setFooter({ text: buttonText });
           
               // Create the new embed with the updated fields and the button
               const newEmbed = new EmbedBuilder()
@@ -484,10 +487,7 @@ client.on("interactionCreate", async(interaction) => {
                 .setDescription('Click the button below to assign yourself a role.')
                 .setColor('#0099ff')
                 .setTimestamp()
-                .addFields(...previousFields, {
-                  name: 'Button',
-                  value: buttonText
-                });
+                .setFooter({ text: buttonText})
           
               const row = new ActionRowBuilder()
                 .addComponents(
