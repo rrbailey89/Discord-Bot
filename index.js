@@ -459,7 +459,7 @@ client.on("interactionCreate", async(interaction) => {
                 console.error(error);
                 await interaction.reply('There was an error trying to repopulate the rules.');
             }
-        }
+        
         } else if (interaction.options.getSubcommand() === 'button') {
             // Get the button text and channel from the options
             const buttonText = interaction.options.getString('button-text');
@@ -506,7 +506,7 @@ client.on("interactionCreate", async(interaction) => {
                 await interaction.reply('There was an error trying to add the button.');
             }
         }
-        
+    }    
 
 if (interaction.isContextMenuCommand()) {
     if (interaction.commandName === "User Information") {
