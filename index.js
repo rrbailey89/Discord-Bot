@@ -464,52 +464,60 @@ client.on("interactionCreate", async(interaction) => {
             // Get the button text and channel from the options
             const buttonText = interaction.options.getString('button-text');
             const channel = interaction.options.getChannel('channel');
-        
+          
             // Find the last message sent by the bot in the specified channel
             const messages = await channel.messages.fetch({ limit: 100 });
             const botMessages = messages.filter(m => m.author.id === client.user.id);
             const previousMessage = botMessages.first();
-        
+          
             // Check if the previous message is an embed
             if (previousMessage && previousMessage.embeds.length > 0) {
-                // Get the embed from the previous message
-                const previousEmbed = previousMessage.embeds[0];
-        
-                // Add the button to the embed
-                const newField = {
-                    name: 'Assign Roles',
-                    value: buttonText,
-                    inline: true
-                };
-                previousEmbed.addFields(newField)
-        
+              // Get the fields from the previous embed
+              const previousFields = previousMessage.embeds[0].fields;
+          
+              // Create the new embed with the updated fields and the button
+              const newEmbed = new EmbedBuilder()
+                .setTitle('Assign Roles')
+                .setDescription('Click the button below to assign yourself a role.')
+                .setColor('#0099ff')
+                .setTimestamp()
+                .addFields(...previousFields, {
+                  name: 'Button',
+                  value: buttonText
+                });
+          
+              const row = new MessageActionRow()
+                .addComponents(
+                  new MessageButton()
+                    .setCustomId('raider_role')
+                    .setLabel('Raider')
+                    .setStyle('SUCCESS'),
+                  new MessageButton()
+                    .setCustomId('sub_role')
+                    .setLabel('Sub')
+                    .setStyle('SUCCESS')
+                );
+          
+              try {
                 // Update the previous message with the updated embed
-                await previousMessage.edit({ embeds: [previousEmbed] });
-        
+                await previousMessage.edit({ embeds: [newEmbed], components: [row] });
+          
                 // Reply to the user with the ephemeral message
                 const ephemeralMessage = new EmbedBuilder()
-                    .setTitle('Assign Roles')
-                    .setDescription('Click the button below to assign yourself a role.')
-                    .setColor('#0099ff')
-                    .setTimestamp()
-        
-                const row = new MessageActionRow()
-                    .addComponents(
-                        new MessageButton()
-                            .setCustomId('raider_role')
-                            .setLabel('Raider')
-                            .setStyle('SUCCESS'),
-                        new MessageButton()
-                            .setCustomId('sub_role')
-                            .setLabel('Sub')
-                            .setStyle('SUCCESS'),
-                    );
-                
-                await interaction.reply({ ephemeral: true, embeds: [ephemeralMessage], components: [row] });
-            } else {
+                  .setDescription('Button added successfully.')
+                  .setColor('#0099ff')
+                  .setTimestamp();
+          
+                await interaction.reply({ ephemeral: true, embeds: [ephemeralMessage] });
+              } catch (error) {
+                console.error(error);
                 await interaction.reply('There was an error trying to add the button.');
+              }
+            } else {
+              await interaction.reply('There was an error trying to add the button.');
             }
-        }
+          }
+          
     }    
 
 if (interaction.isContextMenuCommand()) {
