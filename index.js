@@ -3,6 +3,8 @@ import {
   Client,
   EmbedBuilder,
   ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
   PermissionsBitField,
   GatewayIntentBits 
 }
@@ -492,11 +494,11 @@ client.on("interactionCreate", async(interaction) => {
                   new ButtonBuilder()
                     .setCustomId('raider_role')
                     .setLabel('Raider')
-                    .setStyle('SUCCESS'),
+                    .setStyle(ButtonStyle.Success),
                   new ButtonBuilder()
                     .setCustomId('sub_role')
                     .setLabel('Sub')
-                    .setStyle('SUCCESS')
+                    .setStyle(ButtonStyle.Success)
                 );
           
               try {
