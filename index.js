@@ -416,17 +416,17 @@ client.on("interactionCreate", async(interaction) => {
         .setTimestamp();
       await interaction.reply({ embeds: [embed] });
 
-  } else if (interaction.commandName === 'rules') {
+    } else if (interaction.commandName === 'rules') {
         if (interaction.options.getSubcommand() === 'add') {
             // Check if the user has permission to add rules
             if (!interaction.member.permissions.has([PermissionsBitField.Flags.ModerateMembers, PermissionsBitField.Flags.Administrator])) {
                 await interaction.reply('You do not have permission to add rules.');
                 return;
             }
-
+    
             // Get the rule to add
             const rule = interaction.options.getString('rule');
-
+    
             try {
                 // Add the rule to the file
                 fs.appendFileSync('./rules.txt', `${rule}\n`);
@@ -441,22 +441,22 @@ client.on("interactionCreate", async(interaction) => {
                 await interaction.reply('You do not have permission to use the rules commands.');
                 return;
             }
-
+    
             // Get the channel to send the rules message to
             const channel = interaction.options.getChannel('channel');
-
+    
             // Get the rules from the file
             const rules = fs.readFileSync('./rules.txt', 'utf8').split('\n');
-
+    
             // Create the rules embed
             const rulesEmbed = new EmbedBuilder()
                 .setTitle('Server Rules')
                 .setColor('#0099ff')
                 .setDescription(rules.join('\n'));
-
+    
             // Send the rules embed to the channel
             await channel.send({ embeds: [rulesEmbed] });
-
+    
             await interaction.reply(`Rules populated in ${channel.toString()}`);
         } else if (interaction.options.getSubcommand() === 'repopulate') {
             // Check if the user has permission to send messages
@@ -464,36 +464,36 @@ client.on("interactionCreate", async(interaction) => {
                 await interaction.reply('You do not have permission to use the rules commands.');
                 return;
             }
-
+    
             // Get the channel to repopulate the rules message in
             const channel = interaction.options.getChannel('channel');
-
+    
             // Find the previous rules message sent by the bot in the specified channel
-            const messages = await channel.fetchMessages({ limit: 100 });
+            const messages = await channel.messages.fetch({ limit: 100 });
             const botMessages = messages.filter(m => m.author.id === client.user.id && m.embeds.length > 0 && m.embeds[0].title === 'Server Rules');
             const previousMessage = botMessages.first();
-
+    
             // Get the updated rules from the file
             const rules = fs.readFileSync('./rules.txt', 'utf8').split('\n');
-
+    
             // Create an embed with the updated rules
             const rulesEmbed = new EmbedBuilder()
                 .setTitle('Server Rules')
                 .setColor('#0099ff')
                 .setDescription(rules.join('\n'));
-
-        try {
-            // Update the previous rules message with the updated rules
-            await previousMessage.edit({ embeds: [rulesEmbed] });
-        
-            await interaction.reply(`Rules repopulated in ${channel.toString()}`);
-        } catch (error) {
-            console.error(error);
-            await interaction.reply('There was an error trying to repopulate the rules.');
+    
+            try {
+                // Update the previous rules message with the updated rules
+                await previousMessage.edit({ embeds: [rulesEmbed] });
+            
+                await interaction.reply(`Rules repopulated in ${channel.toString()}`);
+            } catch (error) {
+                console.error(error);
+                await interaction.reply('There was an error trying to repopulate the rules.');
+            }
         }
     }
-    }
-        }});
+    }});
 
 client.login(config.token);
 console.log(`Starting bot...`);
