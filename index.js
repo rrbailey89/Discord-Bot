@@ -464,54 +464,41 @@ client.on("interactionCreate", async(interaction) => {
             }
         
         } else if (interaction.options.getSubcommand() === 'button') {
+            // Permissions check
+            if (!interaction.member.permissions.has([PermissionsBitField.Flags.ModerateMembers, PermissionsBitField.Flags.Administrator])) {
+                await interaction.reply('You do not have permission to use the rules commands.');
+                return;
+            }
             // Get the button text and channel from the options
             const buttonText = interaction.options.getString('button-text');
             const channel = interaction.options.getChannel('channel');
           
             // Find the last message sent by the bot in the specified channel
             const messages = await channel.messages.fetch({ limit: 100 });
-            const botMessages = messages.filter(m => m.author.id === client.user.id);
-            const previousMessage = botMessages.first();
-          
-            // Check if the previous message is an embed
-            if (previousMessage && previousMessage.embeds.length > 0) {
-              // Get the embed from the previous message
-              const previousEmbed = previousMessage.embeds[0];
-          
-              // Create a new EmbedBuilder instance based on the previous embed
-              const newEmbed = new EmbedBuilder(previousEmbed)
-                .setFooter({ text: buttonText });
-          
-              try {
-                // Update the previous message with the updated embed
-                await previousMessage.edit({ embeds: [newEmbed] });
-          
-              // Reply to the user with the ephemeral message
-              const ephemeralMessage = new EmbedBuilder()
-                .setDescription('Click the button below to assign yourself a role.')
-                .setColor('#0099ff')
-                .setTimestamp();
-          
+            const botMessages = messages.filter(m => m.author.id === client.user.id && m.embeds.length > 0 && m.embeds[0].title === 'Server Rules');
+            const lastEmbedMessage = botMessages.first();
+            
+            if (lastEmbedMessage) {
+                // Get existing embed
+                const existingEmbed = lastEmbedMessage.embeds[0];
+
+                // Create the button
               const row = new ActionRowBuilder()
                 .addComponents(
                   new ButtonBuilder()
                     .setCustomId('raider_role')
-                    .setLabel('Raider')
+                    .setLabel(buttonText)
                     .setStyle(ButtonStyle.Success),
-                  new ButtonBuilder()
-                    .setCustomId('sub_role')
-                    .setLabel('Sub')
-                    .setStyle(ButtonStyle.Success)
-                );
+                             );
           
+                // Edit the existing embed message to include the action row
+                await lastEmbedMessage.edit({ embeds: [existingEmbed], components: [row]})
             await interaction.reply({ ephemeral: true, embeds: [ephemeralMessage], components: [row] });
-            } catch (error) {
-              console.error(error);
-              await interaction.reply('There was an error trying to add the button.');
+
+            await interaction.reply(`Button added to the last embed in ${channel.toString()}`);
+            } else {
+                await interaction.reply('No embed message found in the specified channel.');
             }
-          } else {
-            await interaction.reply('There was an error trying to add the button.');
-          }
         }
           
     }    
