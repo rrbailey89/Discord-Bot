@@ -502,6 +502,51 @@ client.on("interactionCreate", async(interaction) => {
           
     }    
 
+    else if (interaction.isButton()) {
+        if (interaction.customId === 'raider_role') {
+          // Create two new buttons for the roles
+          const raiderButton = new ButtonBuilder()
+              .setCustomId('assign_raider_role')
+              .setLabel('Raider')
+              .setStyle(ButtonStyle.Primary);
+    
+          const subButton = new ButtonBuilder()
+              .setCustomId('assign_sub_role')
+              .setLabel('Sub')
+              .setStyle(ButtonStyle.Secondary);
+    
+          // Create an action row with the new buttons
+          const actionRow = new ActionRowBuilder()
+              .addComponents(raiderButton, subButton);
+    
+          // Send an ephemeral message with the new buttons
+          await interaction.reply({
+            content: 'Choose your role:',
+            components: [actionRow],
+            ephemeral: true
+          });
+        } else if (interaction.customId === 'assign_raider_role' || interaction.customId === 'assign_sub_role') {
+          // Get the role to assign based on the button custom ID
+          const roleName = interaction.customId === 'assign_raider_role' ? 'raiders' : 'sub';
+          const role = interaction.guild.roles.cache.find(r => r.name.toLowerCase() === roleName.toLowerCase());
+    
+          if (role) {
+            // Assign the role to the user
+            await interaction.member.roles.add(role);
+            await interaction.reply({
+              content: `Role ${role.name} has been assigned to you.`,
+              ephemeral: true
+            });
+          } else {
+            // If the role does not exist, inform the user
+            await interaction.reply({
+              content: `Role ${roleName} not found.`,
+              ephemeral: true
+            });
+          }
+        }
+      }
+      
 if (interaction.isContextMenuCommand()) {
     if (interaction.commandName === "User Information") {
       const member = interaction.targetMember;
