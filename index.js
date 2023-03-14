@@ -2,7 +2,7 @@
 import {
   Client,
   EmbedBuilder,
-  MessageActionRow,
+  ActionRowBuilder,
   PermissionsBitField,
   GatewayIntentBits 
 }
@@ -487,13 +487,13 @@ client.on("interactionCreate", async(interaction) => {
                   value: buttonText
                 });
           
-              const row = new MessageActionRow()
+              const row = new ActionRowBuilder()
                 .addComponents(
-                  new MessageButton()
+                  new ButtonBuilder()
                     .setCustomId('raider_role')
                     .setLabel('Raider')
                     .setStyle('SUCCESS'),
-                  new MessageButton()
+                  new ButtonBuilder()
                     .setCustomId('sub_role')
                     .setLabel('Sub')
                     .setStyle('SUCCESS')
