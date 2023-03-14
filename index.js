@@ -492,7 +492,8 @@ client.on("interactionCreate", async(interaction) => {
             await interaction.reply('There was an error trying to repopulate the rules.');
         }
     }
-        }});
+    }
+        });
 
 client.login(config.token);
 console.log(`Starting bot...`);
