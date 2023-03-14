@@ -1,4 +1,4 @@
-[
+export default [
   {
     "name": "grantrole",
     "description": "Grant a role to a user",
@@ -290,7 +290,124 @@
         "description": "The duration of the poll in minutes.",
         "type": 4,
         "required": false
+      },
+    ]
+  },
+  {
+    "name": "kick",
+    "description": "Kick a user from the server.",
+    "options": [
+      {
+        "name": "member",
+        "description": "The member to kick.",
+        "type": 6,
+        "required": true
+      },
+      {
+        "name": "reason",
+        "description": "The reason for kicking the member.",
+        "type": 3,
+        "required": false
       }
     ]
-  }
+  },
+  {
+    "name": "timeout",
+    "description": "Put a user in timeout for a specified duration",
+    "options": [
+      {
+        "name": "user",
+        "description": "The user to put in timeout",
+        "type": 6,
+        "required": true
+      },
+      {
+        "name": "duration",
+        "description": "The duration of the timeout in minutes",
+        "type": 4,
+        "required": true,
+        "choices": [
+          {
+            "name": "60 seconds",
+            "value": "1"
+          },
+          {
+            "name": "5 minutes",
+            "value": "5"
+          },
+          {
+            "name": "10 minutes",
+            "value": "10"
+          },
+          {
+            "name": "1 hour",
+            "value": "60"
+          },
+          {
+            "name": "1 day",
+            "value": "1440"
+          },
+          {
+            "name": "1 week",
+            "value": "10080"
+          }
+        ]
+      },
+      {
+        "name": "reason",
+        "description": "The reason for putting the user in timeout",
+        "type": 3,
+        "required": false
+      }
+    ]
+  },
+  {
+    "name": "User Information",
+    "type": 2,
+  },
+  {
+    "name": "rules",
+    "description": "Add or display server rules.",
+    "options": [
+      {
+        "name": "add",
+        "description": "Add a new server rule.",
+        "type": 1,
+        "options": [
+          {
+            "name": "rule",
+            "description": "The rule to add.",
+            "type": 3,
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "populate",
+        "description": "Populate the specified channel with the server rules.",
+        "type": 1,
+        "options": [
+          {
+            "name": "channel",
+            "description": "The channel to populate with the server rules.",
+            "type": 7,
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "repopulate",
+        "description": "Update the specified channel with the server rules.",
+        "type": 1,
+        "options": [
+          {
+            "name": "channel",
+            "description": "The channel to update with the server rules.",
+            "type": 7,
+            "required": true
+          }
+        ]
+      }
+    ]
+  },
 ]
