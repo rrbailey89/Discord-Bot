@@ -460,7 +460,53 @@ client.on("interactionCreate", async(interaction) => {
                 await interaction.reply('There was an error trying to repopulate the rules.');
             }
         }
-    }
+        } else if (interaction.options.getSubcommand() === 'button') {
+            // Get the button text and channel from the options
+            const buttonText = interaction.options.getString('button-text');
+            const channel = interaction.options.getChannel('channel');
+
+            // Find the last message sent by the bot in the specified channel
+            const messages = await channel.messages.fetch({ limit: 100 });
+            const botMessages = messages.filter(m => m.author.id === client.user.id);
+            const previousMessage = botMessages.first();
+
+            // Check if the previous message is an embed
+            if (previousMessage && previousMessage.embeds.length > 0) {
+                // Get the embed from the previous message
+                const previousEmbed = previousMessage.embeds[0];
+
+                // Add the button to the embed
+                previousEmbed.setFooter(buttonText);
+
+                // Update the previous message with the updated embed
+                await previousMessage.edit({ embeds: [previousEmbed] });
+
+                // Reply to the user with the ephemeral message
+                const ephemeralMessage = new EmbedBuilder()
+                    .setTitle('Assign Roles')
+                    .setDescription('Click the button below to assign yourself a role.')
+                    .setColor('#0099ff')
+                    .setTimestamp()
+                    .setFooter(buttonText);
+
+                const row = new MessageActionRow()
+                    .addComponents(
+                        new MessageButton()
+                            .setCustomId('raider_role')
+                            .setLabel('Raider')
+                            .setStyle('SUCCESS'),
+                        new MessageButton()
+                            .setCustomId('sub_role')
+                            .setLabel('Sub')
+                            .setStyle('SUCCESS'),
+                    );
+                
+                await interaction.reply({ ephemeral: true, embeds: [ephemeralMessage], components: [row] });
+            } else {
+                await interaction.reply('There was an error trying to add the button.');
+            }
+        }
+        
 
 if (interaction.isContextMenuCommand()) {
     if (interaction.commandName === "User Information") {
