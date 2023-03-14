@@ -493,7 +493,6 @@ client.on("interactionCreate", async(interaction) => {
           
                 // Edit the existing embed message to include the action row
                 await lastEmbedMessage.edit({ embeds: [existingEmbed], components: [row]})
-            await interaction.reply({ ephemeral: true, embeds: [ephemeralMessage], components: [row] });
 
             await interaction.reply(`Button added to the last embed in ${channel.toString()}`);
             } else {
