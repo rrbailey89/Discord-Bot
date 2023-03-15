@@ -1,5 +1,5 @@
 // Import the necessary packages and files
-import { Client, EmbedBuilder, PermissionsBitField, GatewayIntentBits } from 'discord.js';
+import { Client, Events, EmbedBuilder, PermissionsBitField, GatewayIntentBits } from 'discord.js';
 import config from './config.js';
 import fs from 'fs';
 
@@ -20,8 +20,8 @@ const client = new Client({
 });
 
 // When the bot is ready to start, log a message
-client.on('ready', () => {
-	console.log(`Logged in as ${client.user.tag}`);
+client.once(Events.ClientReady, c => {
+	console.log(`Logged in as ${c.user.tag}`);
 });
 
 // Listen for rate limit events adn log them
