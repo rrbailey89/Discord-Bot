@@ -1,5 +1,5 @@
 // Import the necessary packages and files
-import { Client, Collection, EmbedBuilder, PermissionsBitField, GatewayIntentBits } from 'discord.js';
+import { Client, Collection, GatewayIntentBits } from 'discord.js';
 import { token } from './config.js';
 import fs from 'fs';
 import path from 'node:path';
