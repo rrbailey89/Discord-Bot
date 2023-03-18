@@ -143,7 +143,7 @@ const command = {
 };
 
 command.interactions = {
-	async handleButtonInteraction(interaction, client) {
+	async handleButtonInteraction(interaction) {
 		if (interaction.customId === 'rules_button') {
 			const row = new ActionRowBuilder()
 				.addComponents(
