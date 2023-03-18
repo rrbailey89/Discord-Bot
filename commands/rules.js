@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } from 'discord.js';
+import { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, PermissionFlagsBits } from 'discord.js';
 import fs from 'fs';
 
 const command = {
@@ -31,7 +31,22 @@ const command = {
 					option
 						.setName('channel')
 						.setDescription('The channel to repopulate.')
-						.setRequired(true))),
+						.setRequired(true)))
+		.addSubcommand(subcommand =>
+			subcommand
+				.setName('button')
+				.setDescription('Add a button to the rules embed.')
+				.addChannelOption(option =>
+					option
+						.setName('channel')
+						.setDescription('The channel the rules are in.')
+						.setRequired(false))
+				.addStringOption(option =>
+					option
+						.setName('button-text')
+						.setDescription('The text to display on the button.')
+						.setRequired(false))),
+
 	async execute(interaction, client) {
 		const subcommand = interaction.options.getSubcommand();
 		if (!interaction.member.permissions.has([PermissionFlagsBits.ModerateMembers, PermissionFlagsBits.Administrator])) {
@@ -99,7 +114,64 @@ const command = {
 				await interaction.reply('There was an error trying to repopulate the rules.');
 			}
 		}
+		else if (subcommand === 'button') {
+			const channel = interaction.options.getChannel('channel');
+			const buttonText = interaction.options.getString('button-text');
+
+			const messages = await channel.messages.fetch({ limit: 100 });
+			const botMessages = messages.filter(m => m.author.id === client.user.id && m.embeds.length > 0 && m.embeds[0].title === 'Server Rules');
+			const rulesMessage = botMessages.first();
+
+			if (!rulesMessage) {
+				await interaction.reply('No rules embed was found in the specified channel.');
+				return;
+			}
+
+			const rulesEmbed = rulesMessage.embeds[0];
+			const button = new ActionRowBuilder()
+				.addComponents(
+					new ButtonBuilder()
+						.setCustomId('rules_button')
+						.setLabel(buttonText)
+						.setStyle(ButtonStyle.Primary));
+
+			await rulesMessage.edit({ embeds: [rulesEmbed], components: [button] });
+			await interaction.reply(`Button added to rules embed in ${channel.toString()}`);
+		}
+
 	},
 };
 
+command.interactions = {
+	async handleButtonInteraction(interaction, client) {
+		if (interaction.customId === 'rules_button') {
+			const row = new ActionRowBuilder()
+				.addComponents(
+					new ButtonBuilder()
+						.setCustomId('raider_button')
+						.setLabel('Raider')
+						.setStyle(ButtonStyle.Primary),
+					new ButtonBuilder()
+						.setCustomId('subs_button')
+						.setLabel('Subs')
+						.setStyle(ButtonStyle.Primary),
+				);
+			await interaction.reply({ content: 'Select a role to add.', components: [row], ephemeral: true });
+		}
+		else if (interaction.customId === 'raider_button' || interaction.customId === 'subs_button') {
+			const roleName = interaction.customId === 'raider_button' ? 'Raider' : 'Subs';
+			const role = interaction.guild.roles.cache.find(r => r.name === roleName);
+
+			if (!role) {
+				await interaction.reply({ content: 'The role was not found in this server.', ephemeral: true });
+				return;
+			}
+
+			const member = interaction.member;
+			await member.roles.add(role);
+			await interaction.reply({ content: `You have been assigned the ${roleName}.`, ephemeral: true });
+		}
+	},
+
+};
 export default command;
