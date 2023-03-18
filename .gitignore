@@ -1,0 +1,6 @@
+.eslintrc.json
+config.js
+node_modules
+.env
+config.json
+rules.txt
