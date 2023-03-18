@@ -16,6 +16,15 @@ const command = {
 						.setRequired(true)))
 		.addSubcommand(subcommand =>
 			subcommand
+				.setName('remove')
+				.setDescription('Remove a rule from the server.')
+				.addIntegerOption(option =>
+					option
+						.setName('rule-number')
+						.setDescription('The number of the rule to remove.')
+						.setRequired(true)))
+		.addSubcommand(subcommand =>
+			subcommand
 				.setName('populate')
 				.setDescription('Populate the rules in a channel.')
 				.addChannelOption(option =>
@@ -58,7 +67,9 @@ const command = {
 			const rule = interaction.options.getString('rule');
 
 			try {
-				fs.appendFileSync('./rules.txt', `${rule}\n`);
+				const rules = fs.readFileSync('./rules.txt', 'utf8').split('\n').filter(r => r);
+				rules.push(rule);
+				fs.writeFileSync('./rules.txt', rules.join('\n') + '\n');
 				await interaction.reply(`Rule added: ${rule}`);
 			}
 			catch (error) {
@@ -66,14 +77,32 @@ const command = {
 				await interaction.reply('There was an error trying to add the rule.');
 			}
 		}
+		else if (subcommand === 'remove') {
+			const ruleNumber = interaction.options.getInteger('rule-number');
+
+			try {
+				const rules = fs.readFileSync('./rules.txt', 'utf8').split('\n').filter(r => r);
+				if (ruleNumber < 1 || ruleNumber > rules.length) {
+					await interaction.reply('Invalid rule number.');
+					return;
+				}
+				const removedRule = rules.splice(ruleNumber - 1, 1);
+				fs.writeFileSync('./rules.txt', rules.join('\n') + '\n');
+				await interaction.reply(`Rule removed: ${removedRule}`);
+			}
+			catch (error) {
+				console.error(error);
+				await interaction.reply('There was an error trying to remove the rule.');
+			}
+		}
 		else if (subcommand === 'populate') {
 			const channel = interaction.options.getChannel('channel');
-			const rules = fs.readFileSync('./rules.txt', 'utf8').split('\n');
+			const rules = fs.readFileSync('./rules.txt', 'utf8').split('\n').filter(r => r);
 
 			const rulesEmbed = new EmbedBuilder()
 				.setTitle('Server Rules')
 				.setColor('#0099ff')
-				.setDescription(rules.join('\n'));
+				.setDescription(rules.map((rule, index) => `${index + 1}. ${rule}`).join('\n\n'));
 
 			await channel.send({ embeds: [rulesEmbed] });
 			await interaction.reply(`Rules populated in ${channel.toString()}`);
@@ -95,13 +124,13 @@ const command = {
 			const previousMessage = botMessages.first();
 
 			// Get the updated rules from the file
-			const rules = fs.readFileSync('./rules.txt', 'utf8').split('\n');
+			const rules = fs.readFileSync('./rules.txt', 'utf8').split('\n').filter(r => r);
 
 			// Create an embed with the updated rules
 			const rulesEmbed = new EmbedBuilder()
 				.setTitle('Server Rules')
 				.setColor('#0099ff')
-				.setDescription(rules.join('\n'));
+				.setDescription(rules.map((rule, index) => `${index + 1}. ${rule}`).join('\n\n'));
 
 			try {
 				// Update the previous rules message with the updated rules
