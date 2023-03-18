@@ -188,7 +188,7 @@ command.interactions = {
 			await interaction.reply({ content: 'Select a role to add.', components: [row], ephemeral: true });
 		}
 		else if (interaction.customId === 'raider_button' || interaction.customId === 'subs_button') {
-			const roleName = interaction.customId === 'raider_button' ? 'Raider' : 'Subs';
+			const roleName = interaction.customId === 'raider_button' ? 'Raiders' : 'Subs';
 			const role = interaction.guild.roles.cache.find(r => r.name === roleName);
 
 			if (!role) {
