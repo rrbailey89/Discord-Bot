@@ -11,6 +11,11 @@ const command = {
 		)
 		.addSubcommand(subcommand =>
 			subcommand
+				.setName('dog')
+				.setDescription('Get a random dog fact!'),
+		)
+		.addSubcommand(subcommand =>
+			subcommand
 				.setName('chucknorris')
 				.setDescription('Get a random Chuck Norris fact!'),
 		)
@@ -41,6 +46,23 @@ const command = {
 			catch (error) {
 				console.error(error);
 				await interaction.reply('There was an error trying to get a cat fact!');
+			}
+		}
+		else if (subcommand === 'dog') {
+			try {
+				const response = await fetch('https://dog-api.kinduff.com/api/facts');
+				const data = await response.json();
+
+				const dogFactEmbed = new EmbedBuilder()
+					.setColor('#0099ff')
+					.setTitle('Random Dog Fact')
+					.setDescription(data.facts[0]);
+
+				await interaction.reply({ embeds: [dogFactEmbed] });
+			}
+			catch (error) {
+				console.error(error);
+				await interaction.reply('There was an error trying to get a dog fact!');
 			}
 		}
 		else if (subcommand === 'chucknorris') {
