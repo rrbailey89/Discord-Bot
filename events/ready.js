@@ -1,4 +1,4 @@
-import { Events } from 'discord.js';
+import { ActivityType, Events } from 'discord.js';
 export default {
 	name: Events.ClientReady,
 	once: true,
@@ -8,7 +8,7 @@ export default {
 		await client.user.setPresence({
 			activities: [{
 				name: 'Everything You Type',
-				type: 'WATCHING',
+				type: ActivityType.Watching,
 			}],
 			status: 'online',
 		});
