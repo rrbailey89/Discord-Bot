@@ -5,11 +5,13 @@
     "type": "module",
     "main": "index.js",
     "scripts": {
-      "start": "node index.js"
+        "start": "node index.js"
     },
     "dependencies": {
-      "discord.js": "^14.7.1",
-      "fs": "^0.0.1-security"
+        "chess-image-generator": "^1.0.9",
+        "chess.js": "^1.0.0-beta.4",
+        "discord.js": "^14.7.1",
+        "fs": "^0.0.1-security",
+        "stockfish": "^15.0.0"
     }
-  }
-  
+}
