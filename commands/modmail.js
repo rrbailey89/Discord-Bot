@@ -26,11 +26,11 @@ const command = {
 				await sendModmailMessage(privateChannel, user, message);
 				await waitForUserReaction(privateChannel, user);
 
-				await interaction.reply('Modmail ticket created. Please check the private channel in the server.');
+				await interaction.reply({ content: `Modmail ticket created. Please check the ${privateChannel} in the server.`, ephemeral: true });
 			}
 			catch (error) {
 				console.error('Error handling modmail:', error);
-				await interaction.reply('There was an error creating the modmail ticket. Please try again later.');
+				await interaction.reply({ content: 'There was an error creating the modmail ticket. Please try again later.', ephemeral: true });
 			}
 		}
 	},
