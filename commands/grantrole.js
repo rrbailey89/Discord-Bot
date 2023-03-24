@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from 'discord.js';
+import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
 
 const command = {
 	data: new SlashCommandBuilder()
@@ -16,33 +16,35 @@ const command = {
 				.setRequired(true)),
 
 	async execute(interaction) {
-		const roleOption = interaction.options.getRole('role');
-		const userOption = interaction.options.getUser('user');
+		if (interaction.member.permissions.has(PermissionFlagsBits.Administrator || PermissionFlagsBits.ManageRoles)) {
+			const roleOption = interaction.options.getRole('role');
+			const userOption = interaction.options.getUser('user');
 
-		const roleID = roleOption.id;
-		const userID = userOption.id;
+			const roleID = roleOption.id;
+			const userID = userOption.id;
 
-		const guild = interaction.guild;
-		const member = await guild.members.fetch(userID);
-		const role = guild.roles.cache.get(roleID);
+			const guild = interaction.guild;
+			const member = await guild.members.fetch(userID);
+			const role = guild.roles.cache.get(roleID);
 
-		if (member.roles.cache.has(roleID)) {
-			await member.roles.remove(role);
-			console.log(`[INFO] Removed role ${role.name} from user <@${userID}>`);
+			if (member.roles.cache.has(roleID)) {
+				await member.roles.remove(role);
+				console.log(`[INFO] Removed role ${role.name} from user <@${userID}>`);
 
-			await interaction.reply(`Removed role ${role.name} from user <@${userID}>`);
-			setTimeout(() => {
-				interaction.deleteReply();
-			}, 5000);
-		}
-		else {
-			await member.roles.add(role);
-			console.log(`[INFO] Added role ${role.name} to user <@${userID}>`);
+				await interaction.reply(`Removed role ${role.name} from user <@${userID}>`);
+				setTimeout(() => {
+					interaction.deleteReply();
+				}, 5000);
+			}
+			else {
+				await member.roles.add(role);
+				console.log(`[INFO] Added role ${role.name} to user <@${userID}>`);
 
-			await interaction.reply(`Added role ${role.name} to user <@${userID}>`);
-			setTimeout(() => {
-				interaction.deleteReply();
-			}, 5000);
+				await interaction.reply(`Added role ${role.name} to user <@${userID}>`);
+				setTimeout(() => {
+					interaction.deleteReply();
+				}, 5000);
+			}
 		}
 	},
 };
