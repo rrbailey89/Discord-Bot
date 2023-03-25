@@ -5,3 +5,5 @@ node_modules
 config.json
 rules.txt
 quotes.json
+.vs
+warnings.json

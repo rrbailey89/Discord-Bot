@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from 'discord.js';
+import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
 
 const command = {
 	data: new SlashCommandBuilder()
@@ -11,6 +11,10 @@ const command = {
 				.setRequired(true)),
 
 	async execute(interaction) {
+		if (!interaction.member.permissions.has(PermissionFlagsBits.Administrator)) {
+			await interaction.reply('You do not have permission to use this command.');
+			return;
+		}
 		const url = interaction.options.getString('url');
 
 		await interaction.client.user.setAvatar(url);
