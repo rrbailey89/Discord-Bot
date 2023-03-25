@@ -18,7 +18,7 @@ const command = {
 				.setRequired(false)),
 	async execute(interaction) {
 		await createWarningsFile();
-		if (!interaction.member.permissions.has(PermissionFlagsBits.Administrator)) {
+		if (interaction.member.permissions.has(PermissionFlagsBits.Administrator)) {
 			const member = interaction.options.getMember('member');
 			const reason = interaction.options.getString('reason') || '';
 			const warnChannel = interaction.guild.channels.cache.find(channel => channel.name === 'warn');
