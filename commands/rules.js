@@ -184,11 +184,25 @@ command.interactions = {
 						.setCustomId('subs_button')
 						.setLabel('Subs')
 						.setStyle(ButtonStyle.Primary),
+					new ButtonBuilder()
+						.setCustomId('ewsavage_button')
+						.setLabel('EW Savage')
+						.setStyle(ButtonStyle.Primary),
 				);
 			await interaction.reply({ content: 'Select a role to add.', components: [row], ephemeral: true });
 		}
-		else if (interaction.customId === 'raider_button' || interaction.customId === 'subs_button') {
-			const roleName = interaction.customId === 'raider_button' ? 'Raiders' : 'Subs';
+		else if (interaction.customId === 'raider_button' || interaction.customId === 'subs_button' || interaction.customId === 'ewsavage_button') {
+			let roleName;
+
+			if (interaction.customId === 'raider_button') {
+				roleName = 'Raiders';
+			}
+			else if (interaction.customId === 'subs_button') {
+				roleName = 'Subs';
+			}
+			else if (interaction.customId === 'ewsavage_button') {
+				roleName = 'EW Savage';
+			}
 			const role = interaction.guild.roles.cache.find(r => r.name === roleName);
 
 			if (!role) {
