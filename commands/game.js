@@ -1,4 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js';
+import scenarios from '../gamescenarios/scenarios.js';
 
 const states = {
 	INIT: 'INIT',
@@ -8,18 +9,6 @@ const states = {
 };
 
 const gameSessions = new Map();
-
-const scenarios = [
-	{
-		id: 1,
-		description: 'You find yourself at the entrance of a mysterious cave. What do you do?',
-		actions: [
-			{ input: 'enter', result: 2 },
-			{ input: 'leave', result: 3 },
-		],
-	},
-	// More scenarios...
-];
 
 const command = {
 	data: new SlashCommandBuilder()
