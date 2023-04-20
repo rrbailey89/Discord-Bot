@@ -29,6 +29,10 @@ function cleanMessageContent(content) {
 		.join('');
 }
 
+function excludeURLs(content) {
+	return content.replace(/https?:\/\/[^\s]+/g, '');
+}
+
 export default {
 	name: Events.MessageCreate,
 	async execute(message) {
@@ -37,7 +41,8 @@ export default {
 		const member = message.member;
 		if (!member || member.permissions.has(PermissionFlagsBits.Administrator)) return;
 
-		const cleanedContent = cleanMessageContent(message.content);
+		const contentWithoutURLs = excludeURLs(message.content);
+		const cleanedContent = cleanMessageContent(contentWithoutURLs);
 
 		const detectedWords = forbiddenWords.filter(word => cleanedContent.includes(word));
 
